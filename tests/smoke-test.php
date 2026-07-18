@@ -88,7 +88,9 @@ cc_assert( false === strpos( $verifier, 'api.bscscan.com' ), 'legacy BscScan hos
 
 // --- Headers ---
 $main = file_get_contents( $root . '/chain-checkout.php' );
-cc_assert( false !== strpos( $main, 'Version:           1.3.0' ), 'plugin version 1.3.0' );
+cc_assert( false !== strpos( $main, 'Version:           1.3.1' ), 'plugin version 1.3.1' );
+cc_assert( false !== strpos( $main, 'Author URI:        https://github.com/x-o-r-r-o' ), 'author URI is GitHub' );
+cc_assert( false === strpos( $main, 'Author URI:        https://wordpress.org/plugins/chain-checkout' ), 'author URI not same as plugin URI' );
 cc_assert( false !== strpos( $main, 'Requires at least: 6.9' ), 'Requires WP 6.9+' );
 cc_assert( false !== strpos( $main, 'WC requires at least: 10.0' ), 'Requires WC 10.0+' );
 cc_assert( false !== strpos( $main, 'WC tested up to:   10.8' ), 'WC tested up to 10.8' );
@@ -116,7 +118,7 @@ cc_assert( false !== strpos( $readme_md, 'Checkout branding' ), 'README.md brand
 
 $readme = file_get_contents( $root . '/readme.txt' );
 cc_assert( false !== strpos( $readme, 'Tested up to: 7.0' ), 'readme Tested up to WP 7.0' );
-cc_assert( false !== strpos( $readme, 'Stable tag: 1.3.0' ), 'readme stable 1.3.0' );
+cc_assert( false !== strpos( $readme, 'Stable tag: 1.3.1' ), 'readme stable 1.3.1' );
 
 echo "\n";
 if ( $fail > 0 ) {

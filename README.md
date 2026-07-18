@@ -83,6 +83,10 @@ php tests/smoke-test.php
 
 See [readme.txt](readme.txt) for the full WordPress.org-style changelog.
 
+### 1.3.1
+
+- Fixed wordpress.org header validation: Author URI set to GitHub profile (distinct from Plugin URI)
+
 ### 1.3.0
 
 - Fixed oversized checkout gateway icon

@@ -4,7 +4,7 @@ Tags: woocommerce, cryptocurrency, bitcoin, ethereum, payments, usdt, crypto che
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,6 +90,9 @@ Yes. It uses the WooCommerce payment gateway API and scoped CSS classes.
 5. Thank-you / payment page — amount, address, QR, status
 
 == Changelog ==
+
+= 1.3.1 =
+* Fixed plugin headers: Author URI now points to GitHub (must differ from Plugin URI for wordpress.org)
 
 = 1.3.0 =
 * Fixed oversized checkout gateway icon (default 32×32, CSS-constrained)
