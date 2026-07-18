@@ -1,0 +1,78 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release (e.g. v1.4.1). Leave empty to use the pushed tag.'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve version
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.tag }}" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
+          VERSION="${TAG#v}"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          PLUGIN_VERSION="$(grep -E "define\( 'CHAIN_CHECKOUT_VERSION'" chain-checkout.php | sed -E "s/.*'([0-9.]+)'.*/\1/")"
+          echo "plugin_version=${PLUGIN_VERSION}" >> "$GITHUB_OUTPUT"
+          if [ "${VERSION}" != "${PLUGIN_VERSION}" ]; then
+            echo "Tag version ${VERSION} does not match plugin ${PLUGIN_VERSION}" >&2
+            exit 1
+          fi
+
+      - name: Build WordPress ZIP
+        run: |
+          chmod +x bin/build-zip.sh
+          bin/build-zip.sh "${RUNNER_TEMP}"
+          cp "${RUNNER_TEMP}/chain-checkout.zip" "chain-checkout-${{ steps.meta.outputs.version }}.zip"
+          cp "${RUNNER_TEMP}/chain-checkout-${{ steps.meta.outputs.version }}.zip.sha256" .
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: chain-checkout-${{ steps.meta.outputs.version }}.zip
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.meta.outputs.tag }}"
+          VERSION="${{ steps.meta.outputs.version }}"
+          NOTES="$(awk "/^= ${VERSION} =/{flag=1; next} /^= /{flag=0} flag" readme.txt | sed '/^$/d' | sed 's/^\* /- /')"
+          if [ -z "${NOTES}" ]; then
+            NOTES="Chain Checkout ${VERSION} WordPress plugin package."
+          fi
+          BODY=$(printf '%s\n\n%s\n\n%s\n%s\n' \
+            "## Chain Checkout ${VERSION}" \
+            "${NOTES}" \
+            "Install via **Plugins → Add New → Upload** using \`chain-checkout-${VERSION}.zip\`." \
+            "This release is published with immutable release + build provenance attestations when enabled on the repository.")
+          gh release create "${TAG}" \
+            --title "Chain Checkout ${VERSION}" \
+            --notes "${BODY}" \
+            --target "${{ github.sha }}" \
+            "chain-checkout-${VERSION}.zip#chain-checkout-${VERSION}.zip (WordPress install package)" \
+            "chain-checkout-${VERSION}.zip.sha256#SHA-256 checksum"
