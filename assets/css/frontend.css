@@ -149,6 +149,17 @@
 	border-radius: 8px;
 }
 
+#chain-checkout-qrcode img,
+#chain-checkout-qrcode canvas {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+
+.chain-checkout-box__uri {
+	margin: 0.5rem 0 0;
+}
+
 .chain-checkout-box__hint {
 	margin: 0.5rem 0 0;
 	font-size: 0.85rem;

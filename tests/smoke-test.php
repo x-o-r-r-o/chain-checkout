@@ -78,6 +78,29 @@ chain_checkout_assert( Chain_Checkout_Coins::supports_auto_verify( 'DOT' ), 'DOT
 $base = Chain_Checkout_Coins::to_base_units( '1.5', 6 );
 chain_checkout_assert( '1500000' === $base, "EIP-681 base units 1.5@6 => {$base}" );
 
+$btc_uri = Chain_Checkout_Coins::payment_uri( 'BTC', 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh', '0.01' );
+chain_checkout_assert( 0 === strpos( $btc_uri, 'bitcoin:' ), "BTC BIP-21 scheme => {$btc_uri}" );
+chain_checkout_assert( false !== strpos( $btc_uri, 'amount=0.01' ), "BTC amount => {$btc_uri}" );
+chain_checkout_assert( false === strpos( $btc_uri, 'btc:' ), 'BTC must not use btc: scheme' );
+
+$eth_uri = Chain_Checkout_Coins::payment_uri( 'ETH', '0xabcABC0000000000000000000000000000000001', '1.5' );
+chain_checkout_assert( 0 === strpos( $eth_uri, 'ethereum:0xabcabc' ), "ETH EIP-681 => {$eth_uri}" );
+chain_checkout_assert( false !== strpos( $eth_uri, '@1?' ), "ETH chain id 1 => {$eth_uri}" );
+chain_checkout_assert( false !== strpos( $eth_uri, 'value=1500000000000000000' ), "ETH value wei => {$eth_uri}" );
+
+$usdt_bnb = Chain_Checkout_Coins::payment_uri( 'USDT_BNB', '0xabcABC0000000000000000000000000000000001', '10' );
+chain_checkout_assert( false !== strpos( $usdt_bnb, '@56/transfer' ), "USDT_BNB chain 56 => {$usdt_bnb}" );
+chain_checkout_assert( false !== strpos( $usdt_bnb, 'uint256=' ), "USDT_BNB uint256 => {$usdt_bnb}" );
+
+$sol_uri = Chain_Checkout_Coins::payment_uri( 'SOL', 'So11111111111111111111111111111111111111112', '2.5' );
+chain_checkout_assert( 0 === strpos( $sol_uri, 'solana:' ), "SOL Solana Pay => {$sol_uri}" );
+
+$usdt_sol = Chain_Checkout_Coins::payment_uri( 'USDT_SOL', 'So11111111111111111111111111111111111111112', '5' );
+chain_checkout_assert( false !== strpos( $usdt_sol, 'spl-token=' ), "USDT_SOL spl-token => {$usdt_sol}" );
+
+$usdt_trx = Chain_Checkout_Coins::payment_uri( 'USDT_TRX', 'TXYZabcdefghijklmnopqrstuvwxyz1234567', '1' );
+chain_checkout_assert( $usdt_trx === 'TXYZabcdefghijklmnopqrstuvwxyz1234567', 'USDT_TRX bare address QR' );
+
 // --- Verifier source checks ---
 $verifier = file_get_contents( $root . '/includes/class-chain-checkout-verifier.php' );
 chain_checkout_assert( false !== strpos( $verifier, 'api.etherscan.io/v2/api' ), 'Etherscan V2 endpoint present' );
@@ -88,7 +111,7 @@ chain_checkout_assert( false === strpos( $verifier, 'api.bscscan.com' ), 'legacy
 
 // --- Headers ---
 $main = file_get_contents( $root . '/chain-checkout.php' );
-chain_checkout_assert( false !== strpos( $main, 'Version:           1.3.2' ), 'plugin version 1.3.2' );
+chain_checkout_assert( false !== strpos( $main, 'Version:           1.3.3' ), 'plugin version 1.3.3' );
 chain_checkout_assert( false !== strpos( $main, 'Author URI:        https://github.com/x-o-r-r-o' ), 'author URI is GitHub' );
 chain_checkout_assert( false === strpos( $main, 'Author URI:        https://wordpress.org/plugins/chain-checkout' ), 'author URI not same as plugin URI' );
 chain_checkout_assert( false !== strpos( $main, 'Requires at least: 6.9' ), 'Requires WP 6.9+' );

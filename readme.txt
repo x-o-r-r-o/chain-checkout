@@ -4,7 +4,7 @@ Tags: woocommerce, cryptocurrency, bitcoin, ethereum, payments, usdt, crypto che
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.3.2
+Stable tag: 1.3.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -165,6 +165,10 @@ Suggested privacy policy text is also added under **Settings → Privacy** when 
 
 == Changelog ==
 
+= 1.3.3 =
+* Fixed payment QR URIs for wallet compatibility (BIP-21, EIP-681 with chain IDs, Solana Pay, TRON/XRP/XLM/XMR)
+* Larger QR rendering with address fallback and copyable payment link
+
 = 1.3.2 =
 * wordpress.org readiness: external services disclosure, privacy policy content, longer CSS/ID prefixes, packaging hygiene
 
@@ -208,6 +212,9 @@ Suggested privacy policy text is also added under **Settings → Privacy** when 
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.3.3 =
+Payment QR codes now use standard BIP-21 / EIP-681 / Solana Pay URIs so wallet apps scan and prefill correctly.
 
 = 1.3.2 =
 Documentation and privacy disclosures required for wordpress.org. No breaking setting changes.

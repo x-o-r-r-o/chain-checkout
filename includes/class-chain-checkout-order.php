@@ -212,17 +212,20 @@ class Chain_Checkout_Order {
 			'chain-checkout-frontend',
 			'chainCheckoutData',
 			array(
-				'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
-				'nonce'    => wp_create_nonce( 'chain_checkout_status' ),
-				'orderId'  => $order->get_id(),
-				'expires'  => $expires,
-				'qrValue'  => $uri,
-				'status'   => $status,
-				'i18n'     => array(
+				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
+				'nonce'     => wp_create_nonce( 'chain_checkout_status' ),
+				'orderId'   => $order->get_id(),
+				'expires'   => $expires,
+				'qrValue'   => $uri,
+				'address'   => $address,
+				'amount'    => $amount,
+				'status'    => $status,
+				'i18n'      => array(
 					'copied'   => __( 'Copied!', 'chain-checkout' ),
 					'expired'  => __( 'Payment window expired.', 'chain-checkout' ),
 					'paid'     => __( 'Payment confirmed! Thank you.', 'chain-checkout' ),
 					'checking' => __( 'Checking blockchain…', 'chain-checkout' ),
+					'qrFail'   => __( 'QR unavailable — copy the address manually.', 'chain-checkout' ),
 				),
 			)
 		);

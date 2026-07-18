@@ -222,38 +222,193 @@ class Chain_Checkout_Coins {
 	}
 
 	/**
-	 * Build a payment URI for QR codes when possible.
+	 * Build a payment URI / QR payload for wallet apps.
+	 *
+	 * Standards used:
+	 * - BIP-21: bitcoin: / litecoin: / dogecoin:
+	 * - EIP-681: ethereum:address@chainId?value=… and token /transfer
+	 * - Solana Pay: solana:…?amount=&spl-token=
+	 * - TRON / Ripple / Stellar / Monero common URI forms
+	 * Falls back to bare address when no reliable URI exists (widest wallet support).
 	 *
 	 * @param string $coin_id Coin ID.
 	 * @param string $address Wallet address.
-	 * @param string $amount  Crypto amount.
+	 * @param string $amount  Crypto amount (human / UI units).
 	 * @return string
 	 */
 	public static function payment_uri( $coin_id, $address, $amount ) {
-		$coin = self::get( $coin_id );
-		if ( ! $coin ) {
+		$coin    = self::get( $coin_id );
+		$address = trim( (string) $address );
+		$amount  = trim( (string) $amount );
+
+		if ( ! $coin || '' === $address ) {
 			return $address;
 		}
 
-		$scheme = $coin['uri_scheme'];
-		$type   = $coin['type'];
+		$type     = $coin['type'];
+		$scheme   = $coin['uri_scheme'];
+		$verifier = $coin['verifier'];
+		$chain_id = self::eip155_chain_id( $coin );
 
-		// EIP-681 style for EVM tokens — uint256 must be in base units.
-		if ( in_array( $type, array( 'erc20', 'bep20' ), true ) && ! empty( $coin['contract'] ) ) {
+		// EVM tokens (EIP-681 transfer) — chain ID required for non-mainnet safety.
+		if ( in_array( $type, array( 'erc20', 'bep20' ), true ) && ! empty( $coin['contract'] ) && $chain_id > 0 ) {
 			$base = self::to_base_units( $amount, (int) $coin['decimals'] );
 			return sprintf(
-				'ethereum:%s/transfer?address=%s&uint256=%s',
-				rawurlencode( $coin['contract'] ),
-				rawurlencode( $address ),
-				rawurlencode( $base )
+				'ethereum:%s@%d/transfer?address=%s&uint256=%s',
+				strtolower( $coin['contract'] ),
+				$chain_id,
+				strtolower( $address ),
+				$base
 			);
 		}
 
-		if ( in_array( $scheme, array( 'btc', 'ltc', 'doge', 'eth', 'bnb', 'matic', 'sol', 'trx', 'xrp', 'xlm', 'atom', 'algo', 'near', 'dot', 'fil', 'avax', 'ftm', 'cro', 'etc', 'eos', 'xmr', 'hbar', 'egld', 'zil' ), true ) ) {
-			return sprintf( '%s:%s?amount=%s', $scheme, $address, rawurlencode( $amount ) );
+		// Native EVM coins (EIP-681 value in wei / base units — plain integer for max wallet support).
+		if ( 'native' === $type && $chain_id > 0 && empty( $coin['contract'] ) ) {
+			$wei = self::to_base_units( $amount, (int) $coin['decimals'] );
+			return sprintf(
+				'ethereum:%s@%d?value=%s',
+				strtolower( $address ),
+				$chain_id,
+				$wei
+			);
 		}
 
+		// BIP-21 family (full scheme names — wallets reject btc:/ltc:/doge:).
+		if ( 'btc' === $verifier || 'btc' === $scheme ) {
+			return self::bip21_uri( 'bitcoin', $address, $amount );
+		}
+		if ( 'ltc' === $verifier || 'ltc' === $scheme ) {
+			return self::bip21_uri( 'litecoin', $address, $amount );
+		}
+		if ( 'doge' === $verifier || 'doge' === $scheme ) {
+			return self::bip21_uri( 'dogecoin', $address, $amount );
+		}
+
+		// Solana Pay.
+		if ( in_array( $verifier, array( 'sol', 'solana' ), true ) || 'sol' === $scheme ) {
+			if ( 'spl' === $type && ! empty( $coin['contract'] ) ) {
+				return sprintf(
+					'solana:%s?amount=%s&spl-token=%s',
+					$address,
+					rawurlencode( self::normalize_decimal_amount( $amount ) ),
+					rawurlencode( $coin['contract'] )
+				);
+			}
+			return sprintf(
+				'solana:%s?amount=%s',
+				$address,
+				rawurlencode( self::normalize_decimal_amount( $amount ) )
+			);
+		}
+
+		// TRON — native amount URI; TRC-20 uses bare address (widest TronLink compatibility).
+		if ( in_array( $verifier, array( 'trx', 'tron' ), true ) || 'trx' === $scheme ) {
+			if ( 'trc20' === $type ) {
+				return $address;
+			}
+			return sprintf( 'tron:%s?amount=%s', $address, rawurlencode( self::normalize_decimal_amount( $amount ) ) );
+		}
+
+		// XRP.
+		if ( 'xrp' === $verifier || 'xrp' === $scheme ) {
+			return sprintf( 'ripple:%s?amount=%s', $address, rawurlencode( self::normalize_decimal_amount( $amount ) ) );
+		}
+
+		// Stellar.
+		if ( 'xlm' === $verifier || 'xlm' === $scheme ) {
+			return sprintf(
+				'web+stellar:pay?destination=%s&amount=%s',
+				rawurlencode( $address ),
+				rawurlencode( self::normalize_decimal_amount( $amount ) )
+			);
+		}
+
+		// Monero.
+		if ( 'xmr' === $verifier || 'xmr' === $scheme ) {
+			return sprintf( 'monero:%s?tx_amount=%s', $address, rawurlencode( self::normalize_decimal_amount( $amount ) ) );
+		}
+
+		// Cosmos.
+		if ( 'atom' === $verifier || 'atom' === $scheme ) {
+			return sprintf( 'cosmos:%s?amount=%s', $address, rawurlencode( self::normalize_decimal_amount( $amount ) ) );
+		}
+
+		// Bare address for remaining chains (ALGO, NEAR, DOT, FIL, HBAR, EGLD, ZIL, EOS, …).
 		return $address;
+	}
+
+	/**
+	 * BIP-21 style URI.
+	 *
+	 * @param string $scheme  Full scheme (bitcoin|litecoin|dogecoin).
+	 * @param string $address Address (not URL-encoded).
+	 * @param string $amount  Decimal amount in whole coins.
+	 * @return string
+	 */
+	private static function bip21_uri( $scheme, $address, $amount ) {
+		$amount = self::normalize_decimal_amount( $amount );
+		if ( '' === $amount || '0' === $amount ) {
+			return $scheme . ':' . $address;
+		}
+		return $scheme . ':' . $address . '?amount=' . $amount;
+	}
+
+	/**
+	 * EIP-155 chain ID for a coin.
+	 *
+	 * @param array<string, mixed> $coin Coin.
+	 * @return int
+	 */
+	private static function eip155_chain_id( array $coin ) {
+		$map = array(
+			'ethereum'            => 1,
+			'optimistic-ethereum' => 10,
+			'cronos'              => 25,
+			'binance-smart-chain' => 56,
+			'ethereum-classic'    => 61,
+			'polygon-pos'         => 137,
+			'fantom'              => 250,
+			'arbitrum-one'        => 42161,
+			'avalanche'           => 43114,
+		);
+
+		$platform = isset( $coin['platform'] ) ? $coin['platform'] : '';
+		if ( isset( $map[ $platform ] ) ) {
+			return $map[ $platform ];
+		}
+
+		$verifier = isset( $coin['verifier'] ) ? $coin['verifier'] : '';
+		$by_ver   = array(
+			'eth'      => 1,
+			'bsc'      => 56,
+			'bnb'      => 56,
+			'matic'    => 137,
+			'avax'     => 43114,
+			'ftm'      => 250,
+			'cro'      => 25,
+			'etc'      => 61,
+			'arbitrum' => 42161,
+			'optimism' => 10,
+		);
+		return isset( $by_ver[ $verifier ] ) ? $by_ver[ $verifier ] : 0;
+	}
+
+	/**
+	 * Normalize decimal amount (period separator, no commas).
+	 *
+	 * @param string $amount Amount.
+	 * @return string
+	 */
+	private static function normalize_decimal_amount( $amount ) {
+		$amount = str_replace( ',', '', (string) $amount );
+		$amount = trim( $amount );
+		if ( ! is_numeric( $amount ) ) {
+			return '';
+		}
+		if ( false !== strpos( $amount, '.' ) ) {
+			$amount = rtrim( rtrim( $amount, '0' ), '.' );
+		}
+		return '' === $amount ? '0' : $amount;
 	}
 
 	/**
@@ -267,12 +422,15 @@ class Chain_Checkout_Coins {
 		$amount   = (string) $amount;
 		$decimals = max( 0, (int) $decimals );
 		if ( false === strpos( $amount, '.' ) ) {
-			return $amount . str_repeat( '0', $decimals );
+			$whole = preg_replace( '/\D/', '', $amount );
+			$whole = ( null === $whole || '' === $whole ) ? '0' : $whole;
+			return $whole . str_repeat( '0', $decimals );
 		}
 		list( $whole, $frac ) = explode( '.', $amount, 2 );
-		$frac = substr( str_pad( preg_replace( '/\D/', '', $frac ), $decimals, '0' ), 0, $decimals );
-		$whole = preg_replace( '/\D/', '', $whole );
-		$combined = ltrim( $whole . $frac, '0' );
+		$frac                 = substr( str_pad( preg_replace( '/\D/', '', $frac ), $decimals, '0' ), 0, $decimals );
+		$whole                = preg_replace( '/\D/', '', $whole );
+		$whole                = ( null === $whole || '' === $whole ) ? '0' : $whole;
+		$combined             = ltrim( $whole . $frac, '0' );
 		return '' === $combined ? '0' : $combined;
 	}
 

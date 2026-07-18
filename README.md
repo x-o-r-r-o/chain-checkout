@@ -73,6 +73,10 @@ php tests/smoke-test.php
 
 See [readme.txt](readme.txt).
 
+### 1.3.3
+
+- Payment QR URIs: BIP-21, EIP-681 (with chain IDs + wei), Solana Pay, TRON/XRP/XLM/XMR — larger QR + address fallback
+
 ### 1.3.2
 
 - wordpress.org readiness: external services disclosure, privacy policy content, longer CSS/ID prefixes, packaging hygiene

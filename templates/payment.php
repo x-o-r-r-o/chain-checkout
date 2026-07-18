@@ -54,6 +54,13 @@ defined( 'ABSPATH' ) || exit;
 		<div class="chain-checkout-box__qr">
 			<div id="chain-checkout-qrcode" aria-hidden="true"></div>
 			<p class="chain-checkout-box__hint"><?php esc_html_e( 'Scan with your wallet app', 'chain-checkout' ); ?></p>
+			<?php if ( ! empty( $uri ) && $uri !== $address ) : ?>
+				<p class="chain-checkout-box__uri">
+					<button type="button" class="button-link chain-checkout-copy" data-copy-text="<?php echo esc_attr( $uri ); ?>">
+						<?php esc_html_e( 'Copy payment link', 'chain-checkout' ); ?>
+					</button>
+				</p>
+			<?php endif; ?>
 		</div>
 
 		<p class="chain-checkout-box__status" id="chain-checkout-status-text"><?php esc_html_e( 'Waiting for payment…', 'chain-checkout' ); ?></p>

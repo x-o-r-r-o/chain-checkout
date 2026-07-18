@@ -38,25 +38,37 @@
 			return;
 		}
 		var text = el.textContent.trim();
+		copyRaw(text);
+	}
+
+	function copyRaw(text) {
+		if (!text) {
+			return;
+		}
 		if (navigator.clipboard && navigator.clipboard.writeText) {
 			navigator.clipboard.writeText(text);
-		} else {
-			var ta = document.createElement('textarea');
-			ta.value = text;
-			document.body.appendChild(ta);
-			ta.select();
-			try {
-				document.execCommand('copy');
-			} catch (e) {
-				/* ignore */
-			}
-			document.body.removeChild(ta);
+			return;
 		}
+		var ta = document.createElement('textarea');
+		ta.value = text;
+		document.body.appendChild(ta);
+		ta.select();
+		try {
+			document.execCommand('copy');
+		} catch (e) {
+			/* ignore */
+		}
+		document.body.removeChild(ta);
 	}
 
 	document.querySelectorAll('.chain-checkout-copy').forEach(function (btn) {
 		btn.addEventListener('click', function () {
-			copyText(btn.getAttribute('data-copy'));
+			var raw = btn.getAttribute('data-copy-text');
+			if (raw) {
+				copyRaw(raw);
+			} else {
+				copyText(btn.getAttribute('data-copy'));
+			}
 			var original = btn.textContent;
 			btn.textContent = data.i18n.copied;
 			setTimeout(function () {
@@ -67,17 +79,51 @@
 
 	function renderQr() {
 		var host = document.getElementById('chain-checkout-qrcode');
-		if (!host || !data.qrValue) {
+		if (!host) {
 			return;
 		}
+
+		// Prefer standard payment URI; fall back to bare address (universal scan).
+		var payload = (data.qrValue && String(data.qrValue).trim()) || data.address || '';
+		if (!payload) {
+			host.textContent = data.i18n.qrFail || 'QR unavailable';
+			return;
+		}
+
 		host.innerHTML = '';
-		if (typeof QRCode !== 'undefined') {
+		host.setAttribute('title', payload);
+
+		if (typeof QRCode === 'undefined') {
+			host.textContent = data.i18n.qrFail || 'QR unavailable';
+			return;
+		}
+
+		try {
+			// Larger modules + medium ECC; long EIP-681/Solana URIs get a bigger canvas.
+			var len = payload.length;
+			var size = len > 160 ? 240 : len > 100 ? 200 : 180;
+			var level = len > 160 ? QRCode.CorrectLevel.L : QRCode.CorrectLevel.M;
 			new QRCode(host, {
-				text: data.qrValue,
-				width: 160,
-				height: 160,
-				correctLevel: QRCode.CorrectLevel.M
+				text: payload,
+				width: size,
+				height: size,
+				colorDark: '#000000',
+				colorLight: '#ffffff',
+				correctLevel: level
 			});
+		} catch (err) {
+			host.innerHTML = '';
+			try {
+				// Last resort: bare address scans in every wallet.
+				new QRCode(host, {
+					text: data.address || payload,
+					width: 180,
+					height: 180,
+					correctLevel: QRCode.CorrectLevel.L
+				});
+			} catch (err2) {
+				host.textContent = data.i18n.qrFail || 'QR unavailable';
+			}
 		}
 	}
 
