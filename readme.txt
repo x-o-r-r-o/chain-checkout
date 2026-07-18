@@ -4,7 +4,7 @@ Tags: woocommerce, cryptocurrency, bitcoin, ethereum, payments, usdt, crypto che
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,6 +14,8 @@ Accept cryptocurrency payments directly to your own wallets — no third-party p
 
 Chain Checkout is a WooCommerce payment gateway that lets customers pay with cryptocurrency straight to wallets you control. There is no payment processor holding funds, no license key, and no phone-home licensing.
 
+This plugin contacts public price and blockchain APIs to quote amounts and (optionally) verify payments. See **External services** below for details, data shared, and privacy links.
+
 = Features =
 
 * Direct-to-wallet payments (no payment processor holds your funds)
@@ -22,14 +24,13 @@ Chain Checkout is a WooCommerce payment gateway that lets customers pay with cry
 * Token support (LINK, UNI, CAKE, AVAX, and others) including multi-chain variants
 * Coin picker at checkout + payment page with amount, address, and QR code
 * 60-minute payment window (configurable)
-* Automatic on-chain verification via Etherscan API V2, mempool.space, TronGrid, Helius, AlgoNode, Hedera Mirror, MultiversX, Subscan, and more
+* Automatic on-chain verification via public explorers/RPCs (can be disabled)
 * Wallet rotation across multiple addresses
 * Unique payment amounts for reliable matching
 * Checkout branding: custom title, upload/replace icon, icon width & height, show icon and/or text
 * WooCommerce Checkout Blocks + HPOS compatible
 * Compatible with WordPress 7.0 and WooCommerce 10.x
 * Dedicated admin menu: General, Coins, Wallets, Prices & APIs
-* No license keys or phone-home licensing
 
 = Requirements =
 
@@ -52,7 +53,7 @@ Chain Checkout is a WooCommerce payment gateway that lets customers pay with cry
 
 = Does this use a third-party payment processor? =
 
-No. Customers pay your wallet addresses directly. Public APIs are used only for exchange rates and blockchain verification.
+No. Customers pay your wallet addresses directly. Public APIs are used only for exchange rates and blockchain verification. Nothing is sent to the plugin author’s servers.
 
 = How do I change the checkout icon or title? =
 
@@ -81,15 +82,91 @@ Yes. Chain Checkout registers a Blocks payment method and declares cart/checkout
 
 Yes. It uses the WooCommerce payment gateway API and scoped CSS classes.
 
-== Screenshots ==
+= What third-party services does this plugin use? =
 
-1. Chain Checkout settings — General (payment window, branding, icon size)
-2. Coins — enable coins and networks
-3. Wallets — multi-address manager per activated coin
-4. Checkout — payment method with sized icon and coin picker
-5. Thank-you / payment page — amount, address, QR, status
+See the **External services** section below. Automatic verification can be turned off under Chain Checkout → General. Disabling the gateway stops checkout-related API calls.
+
+== External services ==
+
+Chain Checkout does **not** phone home to the plugin author. It may contact the following third-party services when crypto checkout or automatic verification is used. Optional API keys you configure are sent only to the matching provider.
+
+= CoinGecko (exchange rates) =
+
+* Purpose: Convert order totals to cryptocurrency amounts.
+* Data: Coin identifiers and fiat currency codes (no customer personal data required by the request).
+* When: Checkout quotes, optional product price display, scheduled price refresh.
+* Site: https://www.coingecko.com/
+* Terms: https://www.coingecko.com/en/terms
+* Privacy: https://www.coingecko.com/en/privacy
+
+= Etherscan API V2 (EVM verification) =
+
+* Purpose: Detect inbound payments on Ethereum and other EVM networks.
+* Data: Wallet addresses, optional transaction IDs, your API key if configured.
+* When: Automatic verification (can be disabled).
+* Site: https://etherscan.io/
+* Terms: https://etherscan.io/terms
+* Privacy: https://etherscan.io/privacyPolicy
+
+= mempool.space / Blockstream (Bitcoin) =
+
+* Purpose: Detect Bitcoin payments.
+* Data: Bitcoin addresses / transaction data needed for matching.
+* When: Automatic verification for BTC.
+* Sites: https://mempool.space/ , https://blockstream.info/
+* mempool.space terms/privacy: https://mempool.space/about
+* Blockstream: https://blockstream.com/
+
+= Blockchair (Litecoin / Dogecoin) =
+
+* Purpose: Detect LTC/DOGE payments.
+* Data: Addresses / transactions for matching.
+* When: Automatic verification for LTC/DOGE.
+* Site: https://blockchair.com/
+* Privacy: https://blockchair.com/privacy
+
+= TronGrid (TRON) =
+
+* Purpose: Detect TRX / TRC-20 payments.
+* Data: Addresses / transactions; optional API key.
+* When: Automatic verification for TRON assets.
+* Site: https://www.trongrid.io/
+* Docs/terms: https://developers.tron.network/
+
+= Solana RPC / Helius =
+
+* Purpose: Detect SOL / SPL payments.
+* Data: Addresses / signatures; optional Helius API key.
+* When: Automatic verification for Solana assets.
+* Sites: https://solana.com/ , https://www.helius.dev/
+* Helius privacy: https://www.helius.dev/privacy-policy
+
+= Other public explorers / RPCs (auto-verify) =
+
+Used only for the matching coin when automatic verification is enabled: XRPSCan (XRP), Stellar Horizon (XLM), AlgoNode (ALGO), Hedera Mirror (HBAR), NearBlocks (NEAR), PublicNode Cosmos REST (ATOM), MultiversX API (EGLD), Filfox (FIL), Greymass EOS history (EOS), Subscan (DOT), ViewBlock (ZIL). Requests typically include public addresses and transaction identifiers.
+
+* XRPSCan: https://xrpscan.com/
+* Stellar Horizon: https://developers.stellar.org/
+* AlgoNode: https://algonode.cloud/
+* Hedera Mirror: https://docs.hedera.com/
+* NearBlocks: https://nearblocks.io/
+* PublicNode: https://publicnode.com/
+* MultiversX: https://multiversx.com/
+* Filfox: https://filfox.info/
+* Greymass: https://greymass.com/
+* Subscan: https://www.subscan.io/
+* ViewBlock: https://viewblock.io/
+
+Suggested privacy policy text is also added under **Settings → Privacy** when the plugin is active.
+
+== Third-party libraries ==
+
+* QR Code generator (`assets/js/qrcode.min.js`) — MIT-licensed library by davidshimjs (https://github.com/davidshimjs/qrcodejs). Source is publicly available; the bundled file is minified for production use.
 
 == Changelog ==
+
+= 1.3.2 =
+* wordpress.org readiness: external services disclosure, privacy policy content, longer CSS/ID prefixes, packaging hygiene
 
 = 1.3.1 =
 * Fixed plugin headers: Author URI now points to GitHub (must differ from Plugin URI for wordpress.org)
@@ -102,10 +179,10 @@ Yes. It uses the WooCommerce payment gateway API and scoped CSS classes.
 
 = 1.2.4 =
 * Fixed Add address with inline wallets script (works even if admin.js cache fails)
-* Document-level click handling via data-cc-action attributes
+* Document-level click handling via data-chain-checkout-action attributes
 
 = 1.2.3 =
-* Fixed Wallets “+ Add address” button (vanilla JS; no jQuery data-name parsing bug)
+* Fixed Wallets “+ Add address” button
 * Wallets page lists only coins activated under Coins
 * Mobile-friendly wallets UI with clearer cards, validation, and counters
 * Admin assets load more reliably on plugin screens
@@ -132,5 +209,8 @@ Yes. It uses the WooCommerce payment gateway API and scoped CSS classes.
 
 == Upgrade Notice ==
 
-= 1.3.0 =
-Adds checkout icon/title branding controls and fixes the oversized checkout icon. Re-save General settings if you customize branding.
+= 1.3.2 =
+Documentation and privacy disclosures required for wordpress.org. No breaking setting changes.
+
+= 1.3.1 =
+Author URI updated for wordpress.org header validation.

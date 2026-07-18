@@ -190,10 +190,17 @@ class Chain_Checkout_Admin {
 		}
 
 		echo '<div class="notice notice-warning"><p>';
-		printf(
-			/* translators: %s: settings URL */
-			esc_html__( 'Chain Checkout is installed. Enable coins and add wallet addresses in %s to start accepting payments.', 'chain-checkout' ),
-			'<a href="' . esc_url( admin_url( 'admin.php?page=chain-checkout-coins' ) ) . '">' . esc_html__( 'Chain Checkout settings', 'chain-checkout' ) . '</a>'
+		echo wp_kses(
+			sprintf(
+				/* translators: %s: settings URL */
+				__( 'Chain Checkout is installed. Enable coins and add wallet addresses in %s to start accepting payments.', 'chain-checkout' ),
+				'<a href="' . esc_url( admin_url( 'admin.php?page=chain-checkout-coins' ) ) . '">' . esc_html__( 'Chain Checkout settings', 'chain-checkout' ) . '</a>'
+			),
+			array(
+				'a' => array(
+					'href' => true,
+				),
+			)
 		);
 		echo '</p></div>';
 	}

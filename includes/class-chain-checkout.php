@@ -46,6 +46,7 @@ final class Chain_Checkout {
 		require_once CHAIN_CHECKOUT_PATH . 'includes/class-chain-checkout-coins.php';
 		require_once CHAIN_CHECKOUT_PATH . 'includes/class-chain-checkout-settings.php';
 		require_once CHAIN_CHECKOUT_PATH . 'includes/class-chain-checkout-branding.php';
+		require_once CHAIN_CHECKOUT_PATH . 'includes/class-chain-checkout-privacy.php';
 		require_once CHAIN_CHECKOUT_PATH . 'includes/class-chain-checkout-prices.php';
 		require_once CHAIN_CHECKOUT_PATH . 'includes/class-chain-checkout-wallets.php';
 		require_once CHAIN_CHECKOUT_PATH . 'includes/class-chain-checkout-verifier.php';
@@ -71,6 +72,7 @@ final class Chain_Checkout {
 		Chain_Checkout_Cron::init();
 		Chain_Checkout_Ajax::init();
 		Chain_Checkout_Order::init();
+		Chain_Checkout_Privacy::init();
 
 		if ( is_admin() ) {
 			Chain_Checkout_Admin::init();

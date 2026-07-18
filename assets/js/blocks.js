@@ -48,6 +48,13 @@
 		return;
 	}
 
+	var __ =
+		window.wp && window.wp.i18n && typeof window.wp.i18n.__ === 'function'
+			? window.wp.i18n.__
+			: function (s) {
+					return s;
+			  };
+
 	var coins = Array.isArray(settings.coins) ? settings.coins : [];
 	var display = settings.display || 'both';
 	var iconUrl = settings.icon || '';
@@ -115,7 +122,7 @@
 					if (!coin) {
 						return {
 							type: emitResponse.responseTypes.ERROR,
-							message: 'Please select a cryptocurrency.'
+							message: __('Please select a cryptocurrency.', 'chain-checkout')
 						};
 					}
 					return {
@@ -133,7 +140,7 @@
 		);
 
 		if (!coins.length) {
-			return createElement('p', null, 'No cryptocurrencies are configured.');
+			return createElement('p', null, __('No cryptocurrencies are configured.', 'chain-checkout'));
 		}
 
 		return createElement(

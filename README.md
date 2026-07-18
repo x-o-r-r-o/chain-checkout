@@ -14,7 +14,7 @@ WordPress / WooCommerce payment gateway for accepting cryptocurrency **directly 
 - Token support (LINK, UNI, CAKE, AVAX, …) including multi-chain variants
 - Coin picker at checkout + thank-you page with amount, address, and QR code
 - Configurable payment window (default 60 minutes)
-- Automatic on-chain verification (Etherscan API V2, mempool.space, TronGrid, Helius, and other public APIs)
+- Automatic on-chain verification (Etherscan API V2, mempool.space, TronGrid, Helius, and other public APIs) — can be disabled
 - Wallet rotation across multiple addresses per coin
 - Unique payment amounts for reliable matching on shared addresses
 - WooCommerce **Checkout Blocks** + **HPOS** compatible
@@ -33,13 +33,17 @@ HTTPS is strongly recommended.
 
 ## Installation
 
-1. Download the latest release ZIP, or clone this repository into `wp-content/plugins/chain-checkout`.
+1. Download the latest release ZIP (exclude `tests/` and `.git` from wordpress.org packages), or clone into `wp-content/plugins/chain-checkout`.
 2. Activate **Chain Checkout** in WordPress.
 3. Go to **Chain Checkout → Coins** and enable the assets you accept.
 4. Go to **Chain Checkout → Wallets** and add receiving addresses (`+ Add address` for rotation).
 5. Configure rates & explorer keys under **Prices & APIs**.
 6. Enable the gateway under **WooCommerce → Settings → Payments → Chain Checkout**.
 7. (Optional) Under **Chain Checkout → General**, set checkout title, icon, size, and whether to show icon, text, or both.
+
+## External services
+
+This plugin does **not** send data to the author’s servers. It may contact public price/blockchain APIs when crypto checkout or auto-verify is used. Full disclosure (purpose, data, Terms/Privacy links) is in [`readme.txt`](readme.txt) under **External services**. Suggested privacy text is registered with WordPress via `wp_add_privacy_policy_content()`.
 
 ## Checkout branding
 
@@ -51,48 +55,40 @@ On **Chain Checkout → General**:
 - **Checkout icon** — upload or replace; reset to the bundled default
 - **Icon size** — width & height in px (16–128, default 32)
 
-## API keys (optional but recommended)
-
-| Key | Purpose |
-|-----|---------|
-| Etherscan API V2 | ETH, BNB, Polygon, Arbitrum, Optimism, Avalanche, and other EVM chains |
-| CoinGecko | Higher rate limits for fiat↔crypto rates |
-| TronGrid | TRX / USDT-TRC20 reliability |
-| Helius | Solana verification stability |
-| Subscan | Polkadot (DOT) |
-| ViewBlock | Zilliqa (ZIL) |
-
-Bitcoin uses mempool.space (Blockstream fallback) with no key. Monero (XMR) stays **manual** (privacy coin; needs a view key for automated detection).
-
 ## Security notes
 
 - Only public receiving addresses are stored — never private keys
 - Admin actions require `manage_woocommerce` + nonces
 - Custom checkout icons must be Media Library image attachments (no arbitrary remote URLs)
 - AJAX endpoints are nonce-protected and rate-limited where applicable
-- Amount matching uses tolerance bands and shared-address guards
 
 ## Development
 
 ```bash
-# Offline smoke tests (requires PHP CLI)
+# Offline smoke tests (requires PHP CLI) — not shipped in wordpress.org ZIP
 php tests/smoke-test.php
 ```
 
 ## Changelog
 
-See [readme.txt](readme.txt) for the full WordPress.org-style changelog.
+See [readme.txt](readme.txt).
+
+### 1.3.2
+
+- wordpress.org readiness: external services disclosure, privacy policy content, longer CSS/ID prefixes, packaging hygiene
 
 ### 1.3.1
 
 - Fixed wordpress.org header validation: Author URI set to GitHub profile (distinct from Plugin URI)
 
-### 1.3.0
-
-- Fixed oversized checkout gateway icon
-- Checkout branding options: title, description, icon upload/replace, width/height, icon/text/both display
-- Docs: README.md for GitHub
-
 ## License
 
 GPL-2.0-or-later. See [LICENSE](LICENSE).
+
+## wordpress.org submission notes
+
+Before uploading to [Add Plugin](https://wordpress.org/plugins/developers/add/):
+
+1. Set `Contributors:` in `readme.txt` to **your** WordPress.org username.
+2. Upload a ZIP of the `chain-checkout` folder **without** `.git/` or `tests/`.
+3. Confirm Plugin URI ≠ Author URI (already set).

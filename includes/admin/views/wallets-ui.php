@@ -56,10 +56,10 @@ foreach ( $sections as $section_key => $section_label ) {
  */
 $render_row = static function ( $id, $addr = '' ) {
 	?>
-	<div class="cc-wallet-row">
+	<div class="chain-checkout-wallet-row">
 		<input
 			type="text"
-			class="cc-wallet-input regular-text code"
+			class="chain-checkout-wallet-input regular-text code"
 			name="chain_checkout[wallets][<?php echo esc_attr( $id ); ?>][]"
 			value="<?php echo esc_attr( $addr ); ?>"
 			placeholder="<?php esc_attr_e( 'Paste wallet address', 'chain-checkout' ); ?>"
@@ -67,26 +67,26 @@ $render_row = static function ( $id, $addr = '' ) {
 			spellcheck="false"
 			data-coin="<?php echo esc_attr( $id ); ?>"
 		/>
-		<div class="cc-wallet-row__btns">
-			<button type="button" class="button cc-wallet-copy" data-cc-action="copy">
+		<div class="chain-checkout-wallet-row__btns">
+			<button type="button" class="button chain-checkout-wallet-copy" data-chain-checkout-action="copy">
 				<?php esc_html_e( 'Copy', 'chain-checkout' ); ?>
 			</button>
-			<button type="button" class="button cc-wallet-remove" data-cc-action="remove" aria-label="<?php esc_attr_e( 'Remove address', 'chain-checkout' ); ?>">
+			<button type="button" class="button chain-checkout-wallet-remove" data-chain-checkout-action="remove" aria-label="<?php esc_attr_e( 'Remove address', 'chain-checkout' ); ?>">
 				<span aria-hidden="true">&times;</span>
 			</button>
 		</div>
-		<span class="cc-wallet-row__status" aria-hidden="true"></span>
+		<span class="chain-checkout-wallet-row__status" aria-hidden="true"></span>
 	</div>
 	<?php
 };
 ?>
-<div class="cc-wallets" id="cc-wallets" data-total="<?php echo esc_attr( (string) $total ); ?>">
+<div class="chain-checkout-wallets" id="chain-checkout-wallets" data-total="<?php echo esc_attr( (string) $total ); ?>">
 
-	<header class="cc-wallets__hero">
-		<div class="cc-wallets__hero-text">
-			<h2 class="cc-wallets__heading"><?php esc_html_e( 'Wallet addresses', 'chain-checkout' ); ?></h2>
+	<header class="chain-checkout-wallets__hero">
+		<div class="chain-checkout-wallets__hero-text">
+			<h2 class="chain-checkout-wallets__heading"><?php esc_html_e( 'Wallet addresses', 'chain-checkout' ); ?></h2>
 			<p><?php esc_html_e( 'Add one or more receiving addresses for each activated coin. Extra addresses rotate automatically when rotation is on.', 'chain-checkout' ); ?></p>
-			<p class="cc-wallets__hero-link">
+			<p class="chain-checkout-wallets__hero-link">
 				<?php
 				echo wp_kses(
 					sprintf(
@@ -100,22 +100,22 @@ $render_row = static function ( $id, $addr = '' ) {
 			</p>
 		</div>
 		<?php if ( $enabled_count > 0 ) : ?>
-			<div class="cc-wallets__stats">
-				<div class="cc-wallets__stat">
-					<span class="cc-wallets__stat-value"><?php echo esc_html( (string) $enabled_count ); ?></span>
-					<span class="cc-wallets__stat-label"><?php esc_html_e( 'Coins', 'chain-checkout' ); ?></span>
+			<div class="chain-checkout-wallets__stats">
+				<div class="chain-checkout-wallets__stat">
+					<span class="chain-checkout-wallets__stat-value"><?php echo esc_html( (string) $enabled_count ); ?></span>
+					<span class="chain-checkout-wallets__stat-label"><?php esc_html_e( 'Coins', 'chain-checkout' ); ?></span>
 				</div>
-				<div class="cc-wallets__stat">
-					<span class="cc-wallets__stat-value" id="cc-wallet-counter-num"><?php echo esc_html( (string) $total ); ?></span>
-					<span class="cc-wallets__stat-label"><?php esc_html_e( 'Addresses', 'chain-checkout' ); ?></span>
+				<div class="chain-checkout-wallets__stat">
+					<span class="chain-checkout-wallets__stat-value" id="chain-checkout-wallet-counter-num"><?php echo esc_html( (string) $total ); ?></span>
+					<span class="chain-checkout-wallets__stat-label"><?php esc_html_e( 'Addresses', 'chain-checkout' ); ?></span>
 				</div>
 			</div>
 		<?php endif; ?>
 	</header>
 
 	<?php if ( empty( $enabled ) || 0 === $enabled_count ) : ?>
-		<div class="cc-wallets__empty-state">
-			<div class="cc-wallets__empty-icon" aria-hidden="true">◇</div>
+		<div class="chain-checkout-wallets__empty-state">
+			<div class="chain-checkout-wallets__empty-icon" aria-hidden="true">◇</div>
 			<p>
 				<?php
 				echo wp_kses(
@@ -138,12 +138,12 @@ $render_row = static function ( $id, $addr = '' ) {
 			</p>
 		</div>
 	<?php else : ?>
-		<div class="cc-wallets__toolbar">
-			<label class="cc-wallets__search">
+		<div class="chain-checkout-wallets__toolbar">
+			<label class="chain-checkout-wallets__search">
 				<span class="screen-reader-text"><?php esc_html_e( 'Search coins', 'chain-checkout' ); ?></span>
-				<input type="search" id="cc-wallet-search" placeholder="<?php esc_attr_e( 'Filter by coin, symbol, or network…', 'chain-checkout' ); ?>" />
+				<input type="search" id="chain-checkout-wallet-search" placeholder="<?php esc_attr_e( 'Filter by coin, symbol, or network…', 'chain-checkout' ); ?>" />
 			</label>
-			<p class="cc-wallets__missing" id="cc-wallet-missing" <?php echo $missing_count ? '' : 'hidden'; ?>>
+			<p class="chain-checkout-wallets__missing" id="chain-checkout-wallet-missing" <?php echo $missing_count ? '' : 'hidden'; ?>>
 				<?php
 				if ( $missing_count ) {
 					printf(
@@ -169,12 +169,12 @@ $render_row = static function ( $id, $addr = '' ) {
 				}
 			}
 			?>
-			<section class="cc-wallets__section" data-section="<?php echo esc_attr( $section_key ); ?>">
+			<section class="chain-checkout-wallets__section" data-section="<?php echo esc_attr( $section_key ); ?>">
 				<details open>
-					<summary class="cc-wallets__section-title">
-						<span class="cc-wallets__section-label"><?php echo esc_html( $section_label ); ?></span>
-						<span class="cc-wallets__section-meta">
-							<span class="cc-wallets__section-coins">
+					<summary class="chain-checkout-wallets__section-title">
+						<span class="chain-checkout-wallets__section-label"><?php echo esc_html( $section_label ); ?></span>
+						<span class="chain-checkout-wallets__section-meta">
+							<span class="chain-checkout-wallets__section-coins">
 								<?php
 								printf(
 									/* translators: %d: number of coins in section */
@@ -183,10 +183,10 @@ $render_row = static function ( $id, $addr = '' ) {
 								);
 								?>
 							</span>
-							<span class="cc-wallets__section-count"><?php echo $section_total ? esc_html( (string) $section_total ) : ''; ?></span>
+							<span class="chain-checkout-wallets__section-count"><?php echo $section_total ? esc_html( (string) $section_total ) : ''; ?></span>
 						</span>
 					</summary>
-					<div class="cc-wallets__list">
+					<div class="chain-checkout-wallets__list">
 						<?php foreach ( $section_coins as $id => $coin ) : ?>
 							<?php
 							$addrs  = isset( $wallets[ $id ] ) && is_array( $wallets[ $id ] ) ? array_values( $wallets[ $id ] ) : array();
@@ -194,24 +194,24 @@ $render_row = static function ( $id, $addr = '' ) {
 							$search = strtolower( $coin['name'] . ' ' . $coin['symbol'] . ' ' . $id . ' ' . $coin['network'] . ' ' . $coin['type'] . ' ' . $coin['platform'] );
 							?>
 							<div
-								class="cc-wallet-card <?php echo $count ? 'has-addresses' : 'needs-address'; ?>"
+								class="chain-checkout-wallet-card <?php echo $count ? 'has-addresses' : 'needs-address'; ?>"
 								data-coin="<?php echo esc_attr( $id ); ?>"
 								data-verifier="<?php echo esc_attr( (string) $coin['verifier'] ); ?>"
 								data-search="<?php echo esc_attr( $search ); ?>"
 							>
-								<div class="cc-wallet-card__head">
-									<div class="cc-wallet-card__title">
-										<span class="cc-wallet-card__symbol"><?php echo esc_html( $coin['symbol'] ); ?></span>
-										<span class="cc-wallet-card__name"><?php echo esc_html( $coin['name'] ); ?></span>
+								<div class="chain-checkout-wallet-card__head">
+									<div class="chain-checkout-wallet-card__title">
+										<span class="chain-checkout-wallet-card__symbol"><?php echo esc_html( $coin['symbol'] ); ?></span>
+										<span class="chain-checkout-wallet-card__name"><?php echo esc_html( $coin['name'] ); ?></span>
 									</div>
-									<div class="cc-wallet-card__badges">
-										<span class="cc-pill"><?php echo esc_html( $coin['network'] ); ?></span>
-										<span class="cc-pill cc-pill--muted"><?php echo esc_html( strtoupper( $coin['type'] ) ); ?></span>
-										<span class="cc-wallet-card__count" data-count><?php echo esc_html( (string) $count ); ?></span>
+									<div class="chain-checkout-wallet-card__badges">
+										<span class="chain-checkout-pill"><?php echo esc_html( $coin['network'] ); ?></span>
+										<span class="chain-checkout-pill chain-checkout-pill--muted"><?php echo esc_html( strtoupper( $coin['type'] ) ); ?></span>
+										<span class="chain-checkout-wallet-card__count" data-count><?php echo esc_html( (string) $count ); ?></span>
 									</div>
 								</div>
 
-								<div class="cc-wallet-rows">
+								<div class="chain-checkout-wallet-rows">
 									<?php
 									if ( empty( $addrs ) ) {
 										$render_row( $id, '' );
@@ -223,14 +223,14 @@ $render_row = static function ( $id, $addr = '' ) {
 									?>
 								</div>
 
-								<div class="cc-wallet-card__actions">
-									<button type="button" class="button button-secondary cc-wallet-add" data-cc-action="add">
+								<div class="chain-checkout-wallet-card__actions">
+									<button type="button" class="button button-secondary chain-checkout-wallet-add" data-chain-checkout-action="add">
 										<?php esc_html_e( '+ Add address', 'chain-checkout' ); ?>
 									</button>
-									<button type="button" class="button-link cc-wallet-clear" data-cc-action="clear" <?php disabled( 0 === $count ); ?>>
+									<button type="button" class="button-link chain-checkout-wallet-clear" data-chain-checkout-action="clear" <?php disabled( 0 === $count ); ?>>
 										<?php esc_html_e( 'Clear all', 'chain-checkout' ); ?>
 									</button>
-									<span class="cc-wallet-hint" aria-live="polite"></span>
+									<span class="chain-checkout-wallet-hint" aria-live="polite"></span>
 								</div>
 							</div>
 						<?php endforeach; ?>
@@ -239,7 +239,7 @@ $render_row = static function ( $id, $addr = '' ) {
 			</section>
 		<?php endforeach; ?>
 
-		<p class="cc-wallets__empty" id="cc-wallets-empty" hidden><?php esc_html_e( 'No coins match your search.', 'chain-checkout' ); ?></p>
+		<p class="chain-checkout-wallets__empty" id="chain-checkout-wallets-empty" hidden><?php esc_html_e( 'No coins match your search.', 'chain-checkout' ); ?></p>
 
 		<?php
 		// Inline script so Add/Remove works even if the external admin.js asset fails to load.
@@ -253,10 +253,10 @@ $render_row = static function ( $id, $addr = '' ) {
 			'missing'       => __( '%d coin(s) still need an address', 'chain-checkout' ),
 		);
 		?>
-		<script id="cc-wallets-inline">
+		<script id="chain-checkout-wallets-inline">
 		(function () {
-			if (window.__ccWalletsBound) { return; }
-			window.__ccWalletsBound = true;
+			if (window.__chainCheckoutWalletsBound) { return; }
+			window.__chainCheckoutWalletsBound = true;
 
 			var i18n = <?php echo wp_json_encode( $cc_wallets_i18n ); ?>;
 			var PATTERNS = {
@@ -302,10 +302,10 @@ $render_row = static function ( $id, $addr = '' ) {
 			}
 
 			function createRow(coinId) {
-				var row = el('div', { className: 'cc-wallet-row' });
+				var row = el('div', { className: 'chain-checkout-wallet-row' });
 				var input = el('input', {
 					type: 'text',
-					className: 'cc-wallet-input regular-text code',
+					className: 'chain-checkout-wallet-input regular-text code',
 					name: 'chain_checkout[wallets][' + coinId + '][]',
 					placeholder: i18n.placeholder,
 					autocomplete: 'off',
@@ -313,10 +313,10 @@ $render_row = static function ( $id, $addr = '' ) {
 					'data-coin': coinId
 				});
 				input.value = '';
-				var btns = el('div', { className: 'cc-wallet-row__btns' });
-				var copyBtn = el('button', { type: 'button', className: 'button cc-wallet-copy', 'data-cc-action': 'copy', text: i18n.copy });
-				var removeBtn = el('button', { type: 'button', className: 'button cc-wallet-remove', 'data-cc-action': 'remove', 'aria-label': i18n.remove }, '<span aria-hidden="true">&times;</span>');
-				var status = el('span', { className: 'cc-wallet-row__status', 'aria-hidden': 'true' });
+				var btns = el('div', { className: 'chain-checkout-wallet-row__btns' });
+				var copyBtn = el('button', { type: 'button', className: 'button chain-checkout-wallet-copy', 'data-chain-checkout-action': 'copy', text: i18n.copy });
+				var removeBtn = el('button', { type: 'button', className: 'button chain-checkout-wallet-remove', 'data-chain-checkout-action': 'remove', 'aria-label': i18n.remove }, '<span aria-hidden="true">&times;</span>');
+				var status = el('span', { className: 'chain-checkout-wallet-row__status', 'aria-hidden': 'true' });
 				btns.appendChild(copyBtn);
 				btns.appendChild(removeBtn);
 				row.appendChild(input);
@@ -326,7 +326,7 @@ $render_row = static function ( $id, $addr = '' ) {
 			}
 
 			function countFilled(card) {
-				var n = 0, inputs = card.querySelectorAll('.cc-wallet-input'), i;
+				var n = 0, inputs = card.querySelectorAll('.chain-checkout-wallet-input'), i;
 				for (i = 0; i < inputs.length; i++) {
 					if ((inputs[i].value || '').trim() !== '') n++;
 				}
@@ -339,33 +339,33 @@ $render_row = static function ( $id, $addr = '' ) {
 				if (badge) badge.textContent = String(count);
 				card.classList.toggle('has-addresses', count > 0);
 				card.classList.toggle('needs-address', count === 0);
-				var clearBtn = card.querySelector('[data-cc-action="clear"]');
+				var clearBtn = card.querySelector('[data-chain-checkout-action="clear"]');
 				if (clearBtn) clearBtn.disabled = count === 0;
 			}
 
 			function updateTotals() {
-				var root = document.getElementById('cc-wallets');
+				var root = document.getElementById('chain-checkout-wallets');
 				if (!root) return;
 				var total = 0, missing = 0;
-				var cards = root.querySelectorAll('.cc-wallet-card'), i;
+				var cards = root.querySelectorAll('.chain-checkout-wallet-card'), i;
 				for (i = 0; i < cards.length; i++) {
 					var c = countFilled(cards[i]);
 					total += c;
 					if (c === 0) missing++;
 				}
-				var num = document.getElementById('cc-wallet-counter-num');
+				var num = document.getElementById('chain-checkout-wallet-counter-num');
 				if (num) num.textContent = String(total);
 				root.setAttribute('data-total', String(total));
 
-				var sections = root.querySelectorAll('.cc-wallets__section');
+				var sections = root.querySelectorAll('.chain-checkout-wallets__section');
 				for (i = 0; i < sections.length; i++) {
-					var n = 0, sc = sections[i].querySelectorAll('.cc-wallet-card'), j;
+					var n = 0, sc = sections[i].querySelectorAll('.chain-checkout-wallet-card'), j;
 					for (j = 0; j < sc.length; j++) n += countFilled(sc[j]);
-					var elCount = sections[i].querySelector('.cc-wallets__section-count');
+					var elCount = sections[i].querySelector('.chain-checkout-wallets__section-count');
 					if (elCount) elCount.textContent = n ? String(n) : '';
 				}
 
-				var miss = document.getElementById('cc-wallet-missing');
+				var miss = document.getElementById('chain-checkout-wallet-missing');
 				if (miss) {
 					if (missing > 0) {
 						miss.hidden = false;
@@ -379,11 +379,11 @@ $render_row = static function ( $id, $addr = '' ) {
 
 			function highlight(card) {
 				var seen = {}, verifier = card.getAttribute('data-verifier') || '', hint = '';
-				var rows = card.querySelectorAll('.cc-wallet-row'), i;
+				var rows = card.querySelectorAll('.chain-checkout-wallet-row'), i;
 				for (i = 0; i < rows.length; i++) {
 					var row = rows[i];
-					var input = row.querySelector('.cc-wallet-input');
-					var status = row.querySelector('.cc-wallet-row__status');
+					var input = row.querySelector('.chain-checkout-wallet-input');
+					var status = row.querySelector('.chain-checkout-wallet-row__status');
 					var val = input ? (input.value || '').trim() : '';
 					row.classList.remove('is-duplicate', 'is-invalid');
 					if (status) status.textContent = '';
@@ -400,13 +400,13 @@ $render_row = static function ( $id, $addr = '' ) {
 						seen[val.toLowerCase()] = true;
 					}
 				}
-				var hintEl = card.querySelector('.cc-wallet-hint');
+				var hintEl = card.querySelector('.chain-checkout-wallet-hint');
 				if (hintEl) hintEl.textContent = hint || '';
 			}
 
 			function actionFrom(target) {
 				while (target && target !== document) {
-					if (target.getAttribute && target.getAttribute('data-cc-action')) {
+					if (target.getAttribute && target.getAttribute('data-chain-checkout-action')) {
 						return target;
 					}
 					target = target.parentNode;
@@ -417,9 +417,9 @@ $render_row = static function ( $id, $addr = '' ) {
 			function onClick(e) {
 				var btn = actionFrom(e.target);
 				if (!btn) return;
-				var action = btn.getAttribute('data-cc-action');
+				var action = btn.getAttribute('data-chain-checkout-action');
 				var card = btn;
-				while (card && !(card.classList && card.classList.contains('cc-wallet-card'))) {
+				while (card && !(card.classList && card.classList.contains('chain-checkout-wallet-card'))) {
 					card = card.parentNode;
 				}
 				if (!card) return;
@@ -429,11 +429,11 @@ $render_row = static function ( $id, $addr = '' ) {
 
 				if (action === 'add') {
 					var coinId = card.getAttribute('data-coin');
-					var rows = card.querySelector('.cc-wallet-rows');
+					var rows = card.querySelector('.chain-checkout-wallet-rows');
 					if (!coinId || !rows) return;
 					var row = createRow(coinId);
 					rows.appendChild(row);
-					var input = row.querySelector('.cc-wallet-input');
+					var input = row.querySelector('.chain-checkout-wallet-input');
 					if (input) input.focus();
 					updateCard(card);
 					updateTotals();
@@ -442,13 +442,13 @@ $render_row = static function ( $id, $addr = '' ) {
 
 				if (action === 'remove') {
 					var rowR = btn;
-					while (rowR && !(rowR.classList && rowR.classList.contains('cc-wallet-row'))) {
+					while (rowR && !(rowR.classList && rowR.classList.contains('chain-checkout-wallet-row'))) {
 						rowR = rowR.parentNode;
 					}
 					if (!rowR) return;
-					var all = card.querySelectorAll('.cc-wallet-row');
+					var all = card.querySelectorAll('.chain-checkout-wallet-row');
 					if (all.length <= 1) {
-						var only = rowR.querySelector('.cc-wallet-input');
+						var only = rowR.querySelector('.chain-checkout-wallet-input');
 						if (only) only.value = '';
 					} else {
 						rowR.parentNode.removeChild(rowR);
@@ -461,7 +461,7 @@ $render_row = static function ( $id, $addr = '' ) {
 
 				if (action === 'clear') {
 					var coinC = card.getAttribute('data-coin');
-					var rowsC = card.querySelector('.cc-wallet-rows');
+					var rowsC = card.querySelector('.chain-checkout-wallet-rows');
 					if (!coinC || !rowsC) return;
 					rowsC.innerHTML = '';
 					rowsC.appendChild(createRow(coinC));
@@ -473,10 +473,10 @@ $render_row = static function ( $id, $addr = '' ) {
 
 				if (action === 'copy') {
 					var rowC = btn;
-					while (rowC && !(rowC.classList && rowC.classList.contains('cc-wallet-row'))) {
+					while (rowC && !(rowC.classList && rowC.classList.contains('chain-checkout-wallet-row'))) {
 						rowC = rowC.parentNode;
 					}
-					var inp = rowC ? rowC.querySelector('.cc-wallet-input') : null;
+					var inp = rowC ? rowC.querySelector('.chain-checkout-wallet-input') : null;
 					var text = inp ? inp.value : '';
 					if (!text) return;
 					var done = function () {
@@ -494,9 +494,9 @@ $render_row = static function ( $id, $addr = '' ) {
 
 			function onInput(e) {
 				var t = e.target;
-				if (!t || !t.classList || !t.classList.contains('cc-wallet-input')) return;
+				if (!t || !t.classList || !t.classList.contains('chain-checkout-wallet-input')) return;
 				var card = t;
-				while (card && !(card.classList && card.classList.contains('cc-wallet-card'))) {
+				while (card && !(card.classList && card.classList.contains('chain-checkout-wallet-card'))) {
 					card = card.parentNode;
 				}
 				if (!card) return;
@@ -506,38 +506,38 @@ $render_row = static function ( $id, $addr = '' ) {
 			}
 
 			function onSearch() {
-				var root = document.getElementById('cc-wallets');
-				var searchInput = document.getElementById('cc-wallet-search');
+				var root = document.getElementById('chain-checkout-wallets');
+				var searchInput = document.getElementById('chain-checkout-wallet-search');
 				if (!root || !searchInput) return;
 				var q = (searchInput.value || '').toLowerCase().trim();
 				var any = false;
-				var cards = root.querySelectorAll('.cc-wallet-card'), i;
+				var cards = root.querySelectorAll('.chain-checkout-wallet-card'), i;
 				for (i = 0; i < cards.length; i++) {
 					var search = (cards[i].getAttribute('data-search') || '').toLowerCase();
 					var show = !q || search.indexOf(q) !== -1;
 					cards[i].style.display = show ? '' : 'none';
 					if (show) any = true;
 				}
-				var sections = root.querySelectorAll('.cc-wallets__section');
+				var sections = root.querySelectorAll('.chain-checkout-wallets__section');
 				for (i = 0; i < sections.length; i++) {
-					var visible = 0, sc = sections[i].querySelectorAll('.cc-wallet-card'), j;
+					var visible = 0, sc = sections[i].querySelectorAll('.chain-checkout-wallet-card'), j;
 					for (j = 0; j < sc.length; j++) {
 						if (sc[j].style.display !== 'none') visible++;
 					}
 					sections[i].style.display = visible ? '' : 'none';
 				}
-				var empty = document.getElementById('cc-wallets-empty');
+				var empty = document.getElementById('chain-checkout-wallets-empty');
 				if (empty) empty.hidden = any;
 			}
 
 			document.addEventListener('click', onClick, true);
 			document.addEventListener('input', onInput, true);
-			var searchEl = document.getElementById('cc-wallet-search');
+			var searchEl = document.getElementById('chain-checkout-wallet-search');
 			if (searchEl) searchEl.addEventListener('input', onSearch);
 
-			var root = document.getElementById('cc-wallets');
+			var root = document.getElementById('chain-checkout-wallets');
 			if (root) {
-				var cards = root.querySelectorAll('.cc-wallet-card'), i;
+				var cards = root.querySelectorAll('.chain-checkout-wallet-card'), i;
 				for (i = 0; i < cards.length; i++) {
 					highlight(cards[i]);
 					updateCard(cards[i]);

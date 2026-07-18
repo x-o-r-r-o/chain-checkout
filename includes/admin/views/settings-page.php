@@ -109,16 +109,16 @@ $wallets = isset( $settings['wallets'] ) && is_array( $settings['wallets'] ) ? $
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><label for="cc-checkout-title"><?php esc_html_e( 'Checkout title', 'chain-checkout' ); ?></label></th>
+					<th scope="row"><label for="chain-checkout-title"><?php esc_html_e( 'Checkout title', 'chain-checkout' ); ?></label></th>
 					<td>
-						<input type="text" class="regular-text" id="cc-checkout-title" name="chain_checkout[title]" value="<?php echo esc_attr( (string) ( $settings['title'] ?? __( 'Pay with Cryptocurrency', 'chain-checkout' ) ) ); ?>" />
+						<input type="text" class="regular-text" id="chain-checkout-title" name="chain_checkout[title]" value="<?php echo esc_attr( (string) ( $settings['title'] ?? __( 'Pay with Cryptocurrency', 'chain-checkout' ) ) ); ?>" />
 						<p class="description"><?php esc_html_e( 'Payment method name shown at checkout (e.g. “Pay with Cryptocurrency”).', 'chain-checkout' ); ?></p>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><label for="cc-checkout-description"><?php esc_html_e( 'Checkout description', 'chain-checkout' ); ?></label></th>
+					<th scope="row"><label for="chain-checkout-description"><?php esc_html_e( 'Checkout description', 'chain-checkout' ); ?></label></th>
 					<td>
-						<textarea class="large-text" rows="3" id="cc-checkout-description" name="chain_checkout[description]"><?php echo esc_textarea( (string) ( $settings['description'] ?? '' ) ); ?></textarea>
+						<textarea class="large-text" rows="3" id="chain-checkout-description" name="chain_checkout[description]"><?php echo esc_textarea( (string) ( $settings['description'] ?? '' ) ); ?></textarea>
 					</td>
 				</tr>
 				<tr>
@@ -145,14 +145,14 @@ $wallets = isset( $settings['wallets'] ) && is_array( $settings['wallets'] ) ? $
 						$iw       = absint( $settings['checkout_icon_width'] ?? 32 );
 						$ih       = absint( $settings['checkout_icon_height'] ?? 32 );
 						?>
-						<div class="cc-icon-picker" id="cc-icon-picker">
-							<input type="hidden" name="chain_checkout[checkout_icon_id]" id="cc-checkout-icon-id" value="<?php echo esc_attr( (string) $icon_id ); ?>" />
-							<div class="cc-icon-picker__preview">
-								<img src="<?php echo esc_url( $icon_url ? $icon_url : Chain_Checkout_Branding::default_icon_url() ); ?>" alt="" id="cc-checkout-icon-preview" width="48" height="48" style="width:48px;height:48px;object-fit:contain;border:1px solid #c3c4c7;border-radius:4px;background:#fff;padding:4px;" />
+						<div class="chain-checkout-icon-picker" id="chain-checkout-icon-picker">
+							<input type="hidden" name="chain_checkout[checkout_icon_id]" id="chain-checkout-icon-id" value="<?php echo esc_attr( (string) $icon_id ); ?>" />
+							<div class="chain-checkout-icon-picker__preview">
+								<img src="<?php echo esc_url( $icon_url ? $icon_url : Chain_Checkout_Branding::default_icon_url() ); ?>" alt="" id="chain-checkout-icon-preview" width="48" height="48" style="width:48px;height:48px;object-fit:contain;border:1px solid #c3c4c7;border-radius:4px;background:#fff;padding:4px;" />
 							</div>
 							<p>
-								<button type="button" class="button" id="cc-checkout-icon-upload"><?php esc_html_e( 'Upload / replace icon', 'chain-checkout' ); ?></button>
-								<button type="button" class="button" id="cc-checkout-icon-reset"><?php esc_html_e( 'Use default icon', 'chain-checkout' ); ?></button>
+								<button type="button" class="button" id="chain-checkout-icon-upload"><?php esc_html_e( 'Upload / replace icon', 'chain-checkout' ); ?></button>
+								<button type="button" class="button" id="chain-checkout-icon-reset"><?php esc_html_e( 'Use default icon', 'chain-checkout' ); ?></button>
 							</p>
 							<p class="description"><?php esc_html_e( 'PNG, JPG, GIF, WebP, or SVG. Default plugin icon is used when none is selected.', 'chain-checkout' ); ?></p>
 						</div>
@@ -244,10 +244,19 @@ $wallets = isset( $settings['wallets'] ) && is_array( $settings['wallets'] ) ? $
 						<input type="password" class="regular-text" name="chain_checkout[coingecko_api_key]" value="<?php echo esc_attr( $settings['coingecko_api_key'] ?? '' ); ?>" autocomplete="new-password" />
 						<p class="description">
 							<?php
-							printf(
-								/* translators: %s: URL */
-								esc_html__( 'Fiat↔crypto rates. Free without a key. Get a key at %s', 'chain-checkout' ),
-								'<a href="https://www.coingecko.com/en/api" target="_blank" rel="noopener noreferrer">CoinGecko</a>'
+							echo wp_kses(
+								sprintf(
+									/* translators: %s: URL */
+									__( 'Fiat↔crypto rates. Free without a key. Get a key at %s', 'chain-checkout' ),
+									'<a href="https://www.coingecko.com/en/api" target="_blank" rel="noopener noreferrer">CoinGecko</a>'
+								),
+								array(
+									'a' => array(
+										'href'   => true,
+										'target' => true,
+										'rel'    => true,
+									),
+								)
 							);
 							?>
 						</p>
@@ -259,10 +268,19 @@ $wallets = isset( $settings['wallets'] ) && is_array( $settings['wallets'] ) ? $
 						<input type="password" class="regular-text" name="chain_checkout[etherscan_api_key]" value="<?php echo esc_attr( $settings['etherscan_api_key'] ?? '' ); ?>" autocomplete="new-password" />
 						<p class="description">
 							<?php
-							printf(
-								/* translators: %s: URL */
-								esc_html__( 'One free key covers ETH, BNB, Polygon, Arbitrum, Optimism, Avalanche, Fantom, Cronos, ETC and 50+ EVM chains. Get it at %s', 'chain-checkout' ),
-								'<a href="https://etherscan.io/apis" target="_blank" rel="noopener noreferrer">etherscan.io/apis</a>'
+							echo wp_kses(
+								sprintf(
+									/* translators: %s: URL */
+									__( 'One free key covers ETH, BNB, Polygon, Arbitrum, Optimism, Avalanche, Fantom, Cronos, ETC and 50+ EVM chains. Get it at %s', 'chain-checkout' ),
+									'<a href="https://etherscan.io/apis" target="_blank" rel="noopener noreferrer">etherscan.io/apis</a>'
+								),
+								array(
+									'a' => array(
+										'href'   => true,
+										'target' => true,
+										'rel'    => true,
+									),
+								)
 							);
 							?>
 						</p>
@@ -274,10 +292,19 @@ $wallets = isset( $settings['wallets'] ) && is_array( $settings['wallets'] ) ? $
 						<input type="password" class="regular-text" name="chain_checkout[trongrid_api_key]" value="<?php echo esc_attr( $settings['trongrid_api_key'] ?? '' ); ?>" autocomplete="new-password" />
 						<p class="description">
 							<?php
-							printf(
-								/* translators: %s: URL */
-								esc_html__( 'Recommended for TRX / USDT-TRC20 stability. Free at %s', 'chain-checkout' ),
-								'<a href="https://www.trongrid.io/" target="_blank" rel="noopener noreferrer">TronGrid</a>'
+							echo wp_kses(
+								sprintf(
+									/* translators: %s: URL */
+									__( 'Recommended for TRX / USDT-TRC20 stability. Free at %s', 'chain-checkout' ),
+									'<a href="https://www.trongrid.io/" target="_blank" rel="noopener noreferrer">TronGrid</a>'
+								),
+								array(
+									'a' => array(
+										'href'   => true,
+										'target' => true,
+										'rel'    => true,
+									),
+								)
 							);
 							?>
 						</p>
@@ -289,10 +316,19 @@ $wallets = isset( $settings['wallets'] ) && is_array( $settings['wallets'] ) ? $
 						<input type="password" class="regular-text" name="chain_checkout[helius_api_key]" value="<?php echo esc_attr( $settings['helius_api_key'] ?? '' ); ?>" autocomplete="new-password" />
 						<p class="description">
 							<?php
-							printf(
-								/* translators: %s: URL */
-								esc_html__( 'More stable Solana RPC than the public endpoint. Free tier at %s', 'chain-checkout' ),
-								'<a href="https://www.helius.dev/" target="_blank" rel="noopener noreferrer">Helius</a>'
+							echo wp_kses(
+								sprintf(
+									/* translators: %s: URL */
+									__( 'More stable Solana RPC than the public endpoint. Free tier at %s', 'chain-checkout' ),
+									'<a href="https://www.helius.dev/" target="_blank" rel="noopener noreferrer">Helius</a>'
+								),
+								array(
+									'a' => array(
+										'href'   => true,
+										'target' => true,
+										'rel'    => true,
+									),
+								)
 							);
 							?>
 						</p>
@@ -304,10 +340,19 @@ $wallets = isset( $settings['wallets'] ) && is_array( $settings['wallets'] ) ? $
 						<input type="password" class="regular-text" name="chain_checkout[subscan_api_key]" value="<?php echo esc_attr( $settings['subscan_api_key'] ?? '' ); ?>" autocomplete="new-password" />
 						<p class="description">
 							<?php
-							printf(
-								/* translators: %s: URL */
-								esc_html__( 'Improves Polkadot (DOT) auto-verify rate limits. Free at %s', 'chain-checkout' ),
-								'<a href="https://www.subscan.io/" target="_blank" rel="noopener noreferrer">Subscan</a>'
+							echo wp_kses(
+								sprintf(
+									/* translators: %s: URL */
+									__( 'Improves Polkadot (DOT) auto-verify rate limits. Free at %s', 'chain-checkout' ),
+									'<a href="https://www.subscan.io/" target="_blank" rel="noopener noreferrer">Subscan</a>'
+								),
+								array(
+									'a' => array(
+										'href'   => true,
+										'target' => true,
+										'rel'    => true,
+									),
+								)
 							);
 							?>
 						</p>
@@ -319,10 +364,19 @@ $wallets = isset( $settings['wallets'] ) && is_array( $settings['wallets'] ) ? $
 						<input type="password" class="regular-text" name="chain_checkout[viewblock_api_key]" value="<?php echo esc_attr( $settings['viewblock_api_key'] ?? '' ); ?>" autocomplete="new-password" />
 						<p class="description">
 							<?php
-							printf(
-								/* translators: %s: URL */
-								esc_html__( 'Improves Zilliqa (ZIL) auto-verify reliability. Free at %s', 'chain-checkout' ),
-								'<a href="https://viewblock.io/api" target="_blank" rel="noopener noreferrer">ViewBlock</a>'
+							echo wp_kses(
+								sprintf(
+									/* translators: %s: URL */
+									__( 'Improves Zilliqa (ZIL) auto-verify reliability. Free at %s', 'chain-checkout' ),
+									'<a href="https://viewblock.io/api" target="_blank" rel="noopener noreferrer">ViewBlock</a>'
+								),
+								array(
+									'a' => array(
+										'href'   => true,
+										'target' => true,
+										'rel'    => true,
+									),
+								)
 							);
 							?>
 						</p>

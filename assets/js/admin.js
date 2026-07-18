@@ -16,10 +16,10 @@
 	}
 
 	function initIconPicker() {
-		var uploadBtn = document.getElementById('cc-checkout-icon-upload');
-		var resetBtn = document.getElementById('cc-checkout-icon-reset');
-		var idInput = document.getElementById('cc-checkout-icon-id');
-		var preview = document.getElementById('cc-checkout-icon-preview');
+		var uploadBtn = document.getElementById('chain-checkout-icon-upload');
+		var resetBtn = document.getElementById('chain-checkout-icon-reset');
+		var idInput = document.getElementById('chain-checkout-icon-id');
+		var preview = document.getElementById('chain-checkout-icon-preview');
 		if (!uploadBtn || !idInput || !preview) {
 			return;
 		}
