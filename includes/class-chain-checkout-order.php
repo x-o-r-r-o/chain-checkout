@@ -224,7 +224,8 @@ class Chain_Checkout_Order {
 					'copied'   => __( 'Copied!', 'chain-checkout' ),
 					'expired'  => __( 'Payment window expired.', 'chain-checkout' ),
 					'paid'     => __( 'Payment confirmed! Thank you.', 'chain-checkout' ),
-					'checking' => __( 'Checking blockchain…', 'chain-checkout' ),
+					'checking' => __( 'Checking…', 'chain-checkout' ),
+					'waiting'  => __( 'Waiting for payment…', 'chain-checkout' ),
 					'qrFail'   => __( 'QR unavailable — copy the address manually.', 'chain-checkout' ),
 				),
 			)

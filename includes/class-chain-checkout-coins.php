@@ -175,6 +175,125 @@ class Chain_Checkout_Coins {
 	}
 
 	/**
+	 * Public URL for a bundled coin SVG (Cryptoniq-style icons).
+	 *
+	 * @param string $slug Icon file slug without extension (btc, eth, usdt-round, …).
+	 * @return string
+	 */
+	public static function icon_url( $slug ) {
+		$slug = preg_replace( '/[^a-z0-9\-]/', '', strtolower( (string) $slug ) );
+		if ( '' === $slug ) {
+			return '';
+		}
+		$file = CHAIN_CHECKOUT_PATH . 'assets/svg/coins/' . $slug . '.svg';
+		if ( ! is_readable( $file ) ) {
+			return '';
+		}
+		return CHAIN_CHECKOUT_URL . 'assets/svg/coins/' . $slug . '.svg';
+	}
+
+	/**
+	 * Icon + optional network badge for checkout coin tiles.
+	 *
+	 * @param string $coin_id Coin ID.
+	 * @return array{icon:string,badge:string,slug:string}
+	 */
+	public static function icon_meta( $coin_id ) {
+		$coin   = self::get( $coin_id );
+		$symbol = $coin ? strtoupper( (string) $coin['symbol'] ) : strtoupper( (string) $coin_id );
+		$id     = strtoupper( (string) $coin_id );
+
+		$network_map = array(
+			'ETH' => 'eth',
+			'ARB' => 'arb',
+			'OP'  => 'op',
+			'BNB' => 'bnb',
+			'SOL' => 'sol',
+			'TRX' => 'trx',
+		);
+
+		$base_map = array(
+			'BTC'   => 'btc',
+			'ETH'   => 'eth',
+			'LTC'   => 'ltc',
+			'DOGE'  => 'doge',
+			'BNB'   => 'bnb',
+			'SOL'   => 'sol',
+			'TRX'   => 'trx',
+			'ARB'   => 'arb',
+			'OP'    => 'op',
+			'MATIC' => 'matic',
+			'POL'   => 'matic',
+			'AVAX'  => 'avax',
+			'BCH'   => 'bch',
+			'USDT'  => 'usdt-round',
+			'USDC'  => 'usdc',
+			'XMR'   => 'xmr',
+			'XRP'   => 'xrp',
+			'XLM'   => 'xlm',
+			'LINK'  => 'link',
+			'UNI'   => 'uni',
+			'DOT'   => 'dot',
+			'ATOM'  => 'atom',
+			'EOS'   => 'eos',
+			'ETC'   => 'etc',
+			'ZIL'   => 'zil',
+			'FIL'   => 'fil',
+			'ALGO'  => 'algo',
+			'HBAR'  => 'hbar',
+			'CRO'   => 'cro',
+			'FTM'   => 'ftm',
+			'NEAR'  => 'near',
+			'AXS'   => 'axs',
+			'MANA'  => 'mana',
+			'SAND'  => 'sand',
+			'CAKE'  => 'cake',
+			'FTT'   => 'ftt',
+			'TUSD'  => 'tusd',
+			'GUSD'  => 'gusd',
+			'USDP'  => 'usdp',
+			'ATA'   => 'ata',
+			'EGLD'  => 'egld',
+		);
+
+		$icon_slug  = '';
+		$badge_slug = '';
+
+		// Multi-network stables: main icon + network badge (Cryptoniq pattern).
+		if ( preg_match( '/^(USDT|USDC)_(.+)$/', $id, $m ) ) {
+			$icon_slug  = ( 'USDT' === $m[1] ) ? 'usdt-round' : 'usdc';
+			$badge_slug = isset( $network_map[ $m[2] ] ) ? $network_map[ $m[2] ] : strtolower( $m[2] );
+		} elseif ( preg_match( '/^(LINK|UNI|AVAX)_(ETH|ARB|OP|BNB)$/', $id, $m ) ) {
+			// Extra-chain token variants — token icon + chain badge.
+			$icon_slug  = isset( $base_map[ $m[1] ] ) ? $base_map[ $m[1] ] : strtolower( $m[1] );
+			$badge_slug = isset( $network_map[ $m[2] ] ) ? $network_map[ $m[2] ] : strtolower( $m[2] );
+		} elseif ( in_array( $id, array( 'ETH_ARB', 'ARB' ), true ) ) {
+			$icon_slug = 'arb';
+		} elseif ( in_array( $id, array( 'ETH_OP', 'OP' ), true ) ) {
+			$icon_slug = 'op';
+		} elseif ( isset( $base_map[ $symbol ] ) ) {
+			$icon_slug = $base_map[ $symbol ];
+		} elseif ( isset( $base_map[ $id ] ) ) {
+			$icon_slug = $base_map[ $id ];
+		} else {
+			// Fall back to lowercase symbol / id if a matching SVG exists.
+			$guess = strtolower( preg_replace( '/[^A-Z0-9]/', '', $symbol ) );
+			if ( $guess && self::icon_url( $guess ) ) {
+				$icon_slug = $guess;
+			}
+		}
+
+		$icon  = $icon_slug ? self::icon_url( $icon_slug ) : '';
+		$badge = $badge_slug ? self::icon_url( $badge_slug ) : '';
+
+		return array(
+			'icon'  => $icon,
+			'badge' => $badge,
+			'slug'  => $icon_slug,
+		);
+	}
+
+	/**
 	 * Group coins for admin UI.
 	 *
 	 * @return array<string, array<string, array<string, mixed>>>

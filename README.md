@@ -73,6 +73,18 @@ php tests/smoke-test.php
 
 See [readme.txt](readme.txt).
 
+### 1.3.6
+
+- SVG icons for all remaining catalog coins; multi-network token badges
+
+### 1.3.5
+
+- Admin settings shell styled like Cryptoniq (dark header, sidebar tabs, slate wallets)
+
+### 1.3.4
+
+- Cryptoniq-style checkout coin tiles and payment paybox (icons, status bar, instructions)
+
 ### 1.3.3
 
 - Payment QR URIs: BIP-21, EIP-681 (with chain IDs + wei), Solana Pay, TRON/XRP/XLM/XMR — larger QR + address fallback

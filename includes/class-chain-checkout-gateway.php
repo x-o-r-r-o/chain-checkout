@@ -236,12 +236,30 @@ class Chain_Checkout_Gateway extends WC_Payment_Gateway {
 		foreach ( $coins as $id => $coin ) {
 			$checked = ( $selected === $id ) || ( ! $selected && $first );
 			$first   = false;
+			$icons   = Chain_Checkout_Coins::icon_meta( $id );
+			$classes = array( 'chain-checkout-coin-option' );
+			$style   = '';
+			$inner   = '<span class="chain-checkout-coin-option__sr">' . esc_html( $coin['name'] ) . '</span>';
+
+			if ( ! empty( $icons['icon'] ) ) {
+				$style = 'background-image:url(' . esc_url( $icons['icon'] ) . ')';
+				if ( ! empty( $icons['badge'] ) ) {
+					$classes[] = 'chain-checkout-coin-option--stable';
+					$style    .= ';--cc-badge:url(' . esc_url( $icons['badge'] ) . ')';
+				}
+			} else {
+				$classes[] = 'chain-checkout-coin-option--text';
+				$inner    .= '<span class="chain-checkout-coin-option__text" aria-hidden="true">' . esc_html( $coin['symbol'] ) . '</span>';
+			}
+
 			printf(
-				'<label class="chain-checkout-coin-option"><input type="radio" name="chain_checkout_coin" value="%1$s" %2$s /> <span class="chain-checkout-coin-label"><span class="chain-checkout-coin-symbol">%3$s</span> <span class="chain-checkout-coin-name">%4$s</span></span></label>',
+				'<label class="%1$s" style="%2$s" title="%3$s"><input type="radio" name="chain_checkout_coin" value="%4$s" %5$s />%6$s</label>',
+				esc_attr( implode( ' ', $classes ) ),
+				esc_attr( $style ),
+				esc_attr( $coin['name'] ),
 				esc_attr( $id ),
 				checked( $checked, true, false ),
-				esc_html( $coin['symbol'] ),
-				esc_html( $coin['name'] )
+				$inner // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above.
 			);
 		}
 

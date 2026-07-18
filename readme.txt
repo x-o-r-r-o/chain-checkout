@@ -4,7 +4,7 @@ Tags: woocommerce, cryptocurrency, bitcoin, ethereum, payments, usdt, crypto che
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.3.3
+Stable tag: 1.3.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -164,6 +164,16 @@ Suggested privacy policy text is also added under **Settings → Privacy** when 
 * QR Code generator (`assets/js/qrcode.min.js`) — MIT-licensed library by davidshimjs (https://github.com/davidshimjs/qrcodejs). Source is publicly available; the bundled file is minified for production use.
 
 == Changelog ==
+
+= 1.3.6 =
+* Added SVG icons for all remaining catalog coins (XMR, XRP, LINK, UNI, DOT, and more)
+* Multi-network token tiles show chain badges (e.g. LINK on Arbitrum)
+
+= 1.3.5 =
+* Admin settings UI restyled to match Cryptoniq (dark header, sidebar tabs, slate wallets theme)
+
+= 1.3.4 =
+* Adopted Cryptoniq-style checkout coin tiles and payment paybox UI (icons, status bar, instructions panel)
 
 = 1.3.3 =
 * Fixed payment QR URIs for wallet compatibility (BIP-21, EIP-681 with chain IDs, Solana Pay, TRON/XRP/XLM/XMR)

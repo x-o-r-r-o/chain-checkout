@@ -1,0 +1,7 @@
+Coin icons
+==========
+Many color SVGs are from cryptocurrency-icons (https://github.com/spothq/cryptocurrency-icons),
+licensed CC0 1.0 Universal.
+
+Additional icons (hbar, cro, ftm, near, axs, cake, ftt, ata, egld) are simple
+original geometric marks bundled with Chain Checkout for catalog coverage.

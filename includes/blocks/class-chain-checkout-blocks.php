@@ -100,10 +100,13 @@ final class Chain_Checkout_Blocks extends AbstractPaymentMethodType {
 	public function get_payment_method_data() {
 		$coins = array();
 		foreach ( Chain_Checkout_Coins::get_payable() as $id => $coin ) {
+			$icons   = Chain_Checkout_Coins::icon_meta( $id );
 			$coins[] = array(
 				'id'     => $id,
 				'symbol' => $coin['symbol'],
 				'name'   => $coin['name'],
+				'icon'   => $icons['icon'],
+				'badge'  => $icons['badge'],
 			);
 		}
 

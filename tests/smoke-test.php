@@ -111,7 +111,7 @@ chain_checkout_assert( false === strpos( $verifier, 'api.bscscan.com' ), 'legacy
 
 // --- Headers ---
 $main = file_get_contents( $root . '/chain-checkout.php' );
-chain_checkout_assert( false !== strpos( $main, 'Version:           1.3.3' ), 'plugin version 1.3.3' );
+chain_checkout_assert( false !== strpos( $main, 'Version:           1.3.6' ), 'plugin version 1.3.6' );
 chain_checkout_assert( false !== strpos( $main, 'Author URI:        https://github.com/x-o-r-r-o' ), 'author URI is GitHub' );
 chain_checkout_assert( false === strpos( $main, 'Author URI:        https://wordpress.org/plugins/chain-checkout' ), 'author URI not same as plugin URI' );
 chain_checkout_assert( false !== strpos( $main, 'Requires at least: 6.9' ), 'Requires WP 6.9+' );
@@ -131,6 +131,14 @@ chain_checkout_assert( false !== strpos( $gateway, 'filter_gateway_title' ), 'ga
 
 $frontend_css = file_get_contents( $root . '/assets/css/frontend.css' );
 chain_checkout_assert( false !== strpos( $frontend_css, 'chain-checkout-gateway-icon' ), 'frontend icon CSS' );
+chain_checkout_assert( false !== strpos( $frontend_css, 'chain-checkout-paybox' ), 'cryptoniq-style paybox CSS' );
+$admin_css = file_get_contents( $root . '/assets/css/admin.css' );
+chain_checkout_assert( false !== strpos( $admin_css, 'chain-checkout-options-wrap' ), 'cryptoniq-style admin shell CSS' );
+chain_checkout_assert( false !== strpos( $admin_css, 'cc-header' ), 'admin header class' );
+chain_checkout_assert( is_dir( $root . '/assets/svg/coins' ), 'coin svg directory' );
+chain_checkout_assert( is_file( $root . '/assets/svg/coins/xmr.svg' ), 'XMR icon present' );
+chain_checkout_assert( is_file( $root . '/assets/svg/coins/link.svg' ), 'LINK icon present' );
+chain_checkout_assert( is_file( $root . '/assets/svg/coins/hbar.svg' ), 'HBAR icon present' );
 
 $blocks_js = file_get_contents( $root . '/assets/js/blocks.js' );
 chain_checkout_assert( false !== strpos( $blocks_js, 'iconWidth' ), 'blocks icon width' );
@@ -141,12 +149,11 @@ chain_checkout_assert( false !== strpos( $readme_md, 'Checkout branding' ), 'REA
 
 $readme = file_get_contents( $root . '/readme.txt' );
 chain_checkout_assert( false !== strpos( $readme, 'Tested up to: 7.0' ), 'readme Tested up to WP 7.0' );
-chain_checkout_assert( false !== strpos( $readme, 'Stable tag: 1.3.2' ), 'readme stable 1.3.2' );
-
+chain_checkout_assert( false !== strpos( $readme, 'Stable tag: 1.3.6' ), 'readme stable 1.3.6' );
 
 $readme = file_get_contents( $root . '/readme.txt' );
 chain_checkout_assert( false !== strpos( $readme, '== External services ==' ), 'readme external services section' );
-chain_checkout_assert( false !== strpos( $readme, 'Stable tag: 1.3.2' ), 'readme stable 1.3.2' );
+chain_checkout_assert( false !== strpos( $readme, 'Cryptoniq-style' ), 'readme 1.3.6 cryptoniq theme note' );
 $privacy = file_get_contents( $root . '/includes/class-chain-checkout-privacy.php' );
 chain_checkout_assert( false !== strpos( $privacy, 'wp_add_privacy_policy_content' ), 'privacy policy content registered' );
 chain_checkout_assert( is_file( $root . '/assets/js/qrcode.LICENSE.txt' ), 'qrcode license attribution' );

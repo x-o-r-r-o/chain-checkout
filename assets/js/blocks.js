@@ -147,18 +147,27 @@
 			'div',
 			{ className: 'chain-checkout-blocks' },
 			settings.description
-				? createElement('p', null, decodeEntities(settings.description))
+				? createElement('p', { className: 'chain-checkout-desc' }, decodeEntities(settings.description))
 				: null,
 			createElement(
 				'div',
 				{ className: 'chain-checkout-coin-grid' },
 				coins.map(function (c) {
-					return createElement(
-						'label',
-						{
-							key: c.id,
-							className: 'chain-checkout-coin-option'
-						},
+					var classes = 'chain-checkout-coin-option';
+					var style = {};
+					if (c.icon) {
+						style.backgroundImage = 'url(' + c.icon + ')';
+						if (c.badge) {
+							classes += ' chain-checkout-coin-option--stable';
+							style['--cc-badge'] = 'url(' + c.badge + ')';
+						}
+					} else {
+						classes += ' chain-checkout-coin-option--text';
+					}
+					if (coin === c.id) {
+						classes += ' is-selected';
+					}
+					var children = [
 						createElement('input', {
 							type: 'radio',
 							name: 'chain_checkout_coin_blocks',
@@ -170,11 +179,28 @@
 						}),
 						createElement(
 							'span',
-							{ className: 'chain-checkout-coin-label' },
-							createElement('span', { className: 'chain-checkout-coin-symbol' }, c.symbol),
-							' ',
-							createElement('span', { className: 'chain-checkout-coin-name' }, c.name)
+							{ className: 'chain-checkout-coin-option__sr' },
+							c.name
 						)
+					];
+					if (!c.icon) {
+						children.push(
+							createElement(
+								'span',
+								{ className: 'chain-checkout-coin-option__text', 'aria-hidden': 'true' },
+								c.symbol || c.name
+							)
+						);
+					}
+					return createElement(
+						'label',
+						{
+							key: c.id,
+							className: classes,
+							style: style,
+							title: c.name
+						},
+						children
 					);
 				})
 			)
