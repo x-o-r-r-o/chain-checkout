@@ -4,7 +4,7 @@ Tags: woocommerce, cryptocurrency, bitcoin, ethereum, payments, usdt, crypto che
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.5.2
+Stable tag: 1.5.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -255,6 +255,9 @@ Suggested privacy policy text is also added under **Settings → Privacy** when 
 
 == Changelog ==
 
+= 1.5.3 =
+* Admin shell CSS is inlined via wp_add_inline_style so the settings UI cannot render unstyled if the stylesheet URL fails
+
 = 1.5.2 =
 * Hardened confirmation gating for BTC, Blockchair UTXO, Solana, TRON, ALGO, DOT, and other non-EVM verifiers (fail closed when depth/success cannot be verified)
 * Checkout quotes now reserve the exact unique-dust amount used on the thank-you payment page
@@ -368,6 +371,9 @@ Suggested privacy policy text is also added under **Settings → Privacy** when 
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.5.3 =
+Admin settings UI stays styled even if the external admin.css request fails. Update if the Xorro admin shell looked unstyled.
 
 = 1.5.2 =
 Stronger multi-chain confirmation gating and exact checkout quotes matching the payment page. Update recommended.

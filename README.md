@@ -83,6 +83,10 @@ php tests/smoke-test.php
 
 See [readme.txt](readme.txt).
 
+### 1.5.3
+
+- Admin shell CSS inlined via `wp_add_inline_style` so settings never render unstyled if the stylesheet URL fails
+
 ### 1.5.2
 
 - Fail-closed confirmation depth across major non-EVM verifiers

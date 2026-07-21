@@ -19,8 +19,104 @@ class Xdwp_Admin {
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
 		add_action( 'admin_init', array( __CLASS__, 'handle_save' ) );
 		add_action( 'admin_notices', array( __CLASS__, 'setup_notice' ) );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
 		add_filter( 'admin_body_class', array( __CLASS__, 'admin_body_class' ) );
 		add_filter( 'plugin_action_links_' . XDWP_BASENAME, array( __CLASS__, 'action_links' ) );
+	}
+
+	/**
+	 * Enqueue admin shell CSS/JS on plugin screens (and print inline CSS backup).
+	 *
+	 * @param string $hook Hook suffix.
+	 */
+	public static function enqueue_assets( $hook ) {
+		if ( ! self::is_plugin_screen() && false === strpos( (string) $hook, 'xorro-direct-wallet-payments-woocommerce' ) ) {
+			return;
+		}
+		self::enqueue_shell_assets();
+	}
+
+	/**
+	 * Register + enqueue the Cryptoniq-style admin shell assets.
+	 *
+	 * Uses wp_enqueue + wp_add_inline_style so the shell never renders unstyled
+	 * if the external stylesheet request fails (wordpress.org compliant).
+	 */
+	public static function enqueue_shell_assets() {
+		$ver = XDWP_VERSION;
+		$css = XDWP_PATH . 'assets/css/admin.css';
+		if ( is_readable( $css ) ) {
+			$ver = XDWP_VERSION . '.' . (string) filemtime( $css );
+		}
+
+		wp_enqueue_style( 'dashicons' );
+		wp_enqueue_style(
+			'xdwp-admin',
+			XDWP_URL . 'assets/css/admin.css',
+			array( 'dashicons' ),
+			$ver
+		);
+
+		// Inline backup so the admin shell cannot disappear if the CSS URL 404s/blocked.
+		if ( is_readable( $css ) && ! wp_style_is( 'xdwp-admin', 'done' ) ) {
+			static $inlined = false;
+			if ( ! $inlined ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local plugin CSS.
+				$css_body = file_get_contents( $css );
+				if ( is_string( $css_body ) && '' !== $css_body ) {
+					wp_add_inline_style( 'xdwp-admin', $css_body );
+					$inlined = true;
+				}
+			}
+		}
+
+		if ( ! wp_script_is( 'xdwp-admin', 'enqueued' ) ) {
+			wp_enqueue_script(
+				'xdwp-admin',
+				XDWP_URL . 'assets/js/admin.js',
+				array( 'jquery' ),
+				XDWP_VERSION,
+				true
+			);
+		}
+
+		$wallets_js  = XDWP_PATH . 'assets/js/wallets.js';
+		$wallets_ver = XDWP_VERSION;
+		if ( is_readable( $wallets_js ) ) {
+			$wallets_ver = XDWP_VERSION . '.' . (string) filemtime( $wallets_js );
+		}
+		if ( ! wp_script_is( 'xdwp-wallets', 'enqueued' ) ) {
+			wp_enqueue_script(
+				'xdwp-wallets',
+				XDWP_URL . 'assets/js/wallets.js',
+				array(),
+				$wallets_ver,
+				true
+			);
+		}
+
+		$admin_i18n = array(
+			'placeholder'         => __( 'Paste wallet address', 'xorro-direct-wallet-payments-woocommerce' ),
+			'copy'                => __( 'Copy', 'xorro-direct-wallet-payments-woocommerce' ),
+			'copied'              => __( 'Copied', 'xorro-direct-wallet-payments-woocommerce' ),
+			'remove'              => __( 'Remove address', 'xorro-direct-wallet-payments-woocommerce' ),
+			'invalidFormat'       => __( 'Invalid format', 'xorro-direct-wallet-payments-woocommerce' ),
+			'duplicate'           => __( 'Duplicate address', 'xorro-direct-wallet-payments-woocommerce' ),
+			/* translators: %d: coins still missing a wallet */
+			'missing'             => __( '%d coin(s) still need an address', 'xorro-direct-wallet-payments-woocommerce' ),
+			/* translators: %d: number of wallet addresses */
+			'addressesConfigured' => __( '%d addresses', 'xorro-direct-wallet-payments-woocommerce' ),
+			/* translators: %d: coins still missing a wallet */
+			'missingWallets'      => __( '%d coin(s) still need an address', 'xorro-direct-wallet-payments-woocommerce' ),
+			'defaultIcon'         => class_exists( 'Xdwp_Branding' ) ? Xdwp_Branding::default_icon_url() : '',
+			'mediaTitle'          => __( 'Select checkout icon', 'xorro-direct-wallet-payments-woocommerce' ),
+			'mediaButton'         => __( 'Use this icon', 'xorro-direct-wallet-payments-woocommerce' ),
+			'mediaUnavailable'    => __( 'Media library is not available.', 'xorro-direct-wallet-payments-woocommerce' ),
+		);
+		wp_localize_script( 'xdwp-admin', 'xdwpAdmin', $admin_i18n );
+		wp_localize_script( 'xdwp-wallets', 'xdwpAdmin', $admin_i18n );
+
+		wp_enqueue_media();
 	}
 
 	/**
@@ -237,41 +333,8 @@ class Xdwp_Admin {
 			return;
 		}
 
-		// Assets are enqueued on admin_enqueue_scripts; print late if that missed.
-		if ( ! wp_style_is( 'xdwp-admin', 'enqueued' ) ) {
-			$ver = XDWP_VERSION;
-			$css = XDWP_PATH . 'assets/css/admin.css';
-			if ( is_readable( $css ) ) {
-				$ver = XDWP_VERSION . '.' . (string) filemtime( $css );
-			}
-			wp_enqueue_style( 'dashicons' );
-			wp_enqueue_style(
-				'xdwp-admin',
-				XDWP_URL . 'assets/css/admin.css',
-				array( 'dashicons' ),
-				$ver
-			);
-		}
-		if ( ! wp_script_is( 'xdwp-admin', 'enqueued' ) ) {
-			wp_enqueue_script(
-				'xdwp-admin',
-				XDWP_URL . 'assets/js/admin.js',
-				array( 'jquery' ),
-				XDWP_VERSION,
-				true
-			);
-			wp_localize_script(
-				'xdwp-admin',
-				'xdwpAdmin',
-				array(
-					'defaultIcon'      => class_exists( 'Xdwp_Branding' ) ? Xdwp_Branding::default_icon_url() : '',
-					'mediaTitle'       => __( 'Select checkout icon', 'xorro-direct-wallet-payments-woocommerce' ),
-					'mediaButton'      => __( 'Use this icon', 'xorro-direct-wallet-payments-woocommerce' ),
-					'mediaUnavailable' => __( 'Media library is not available.', 'xorro-direct-wallet-payments-woocommerce' ),
-				)
-			);
-		}
-		wp_enqueue_media();
+		// Ensure shell assets exist even if admin_enqueue_scripts missed this screen.
+		self::enqueue_shell_assets();
 
 		if ( did_action( 'admin_print_styles' ) && wp_style_is( 'xdwp-admin', 'enqueued' ) ) {
 			wp_print_styles( 'xdwp-admin' );

@@ -90,6 +90,12 @@ class Xdwp_Ajax {
 			return;
 		}
 
+		// Plugin settings screens: Admin owns the full shell (enqueue + inline CSS backup).
+		if ( $is_plugin_page && class_exists( 'Xdwp_Admin' ) ) {
+			Xdwp_Admin::enqueue_shell_assets();
+			return;
+		}
+
 		$ver = XDWP_VERSION;
 		$css = XDWP_PATH . 'assets/css/admin.css';
 		if ( is_readable( $css ) ) {
@@ -112,45 +118,13 @@ class Xdwp_Ajax {
 			true
 		);
 
-		$wallets_js  = XDWP_PATH . 'assets/js/wallets.js';
-		$wallets_ver = XDWP_VERSION;
-		if ( is_readable( $wallets_js ) ) {
-			$wallets_ver = XDWP_VERSION . '.' . (string) filemtime( $wallets_js );
-		}
-		wp_enqueue_script(
-			'xdwp-wallets',
-			XDWP_URL . 'assets/js/wallets.js',
-			array(),
-			$wallets_ver,
-			true
-		);
-
-		if ( $is_plugin_page ) {
-			wp_enqueue_media();
-		}
-
 		$admin_i18n = array(
-			'placeholder'         => __( 'Paste wallet address', 'xorro-direct-wallet-payments-woocommerce' ),
-			'copy'                => __( 'Copy', 'xorro-direct-wallet-payments-woocommerce' ),
-			'copied'              => __( 'Copied', 'xorro-direct-wallet-payments-woocommerce' ),
-			'remove'              => __( 'Remove address', 'xorro-direct-wallet-payments-woocommerce' ),
-			'invalidFormat'       => __( 'Invalid format', 'xorro-direct-wallet-payments-woocommerce' ),
-			'duplicate'           => __( 'Duplicate address', 'xorro-direct-wallet-payments-woocommerce' ),
-			/* translators: %d: coins still missing a wallet */
-			'missing'             => __( '%d coin(s) still need an address', 'xorro-direct-wallet-payments-woocommerce' ),
-			/* translators: %d: number of wallet addresses */
-			'addressesConfigured' => __( '%d addresses', 'xorro-direct-wallet-payments-woocommerce' ),
-			/* translators: %d: coins still missing a wallet */
-			'missingWallets'      => __( '%d coin(s) still need an address', 'xorro-direct-wallet-payments-woocommerce' ),
-			'defaultIcon'         => Xdwp_Branding::default_icon_url(),
-			'mediaTitle'          => __( 'Select checkout icon', 'xorro-direct-wallet-payments-woocommerce' ),
-			'mediaButton'         => __( 'Use this icon', 'xorro-direct-wallet-payments-woocommerce' ),
-			'mediaUnavailable'    => __( 'Media library is not available.', 'xorro-direct-wallet-payments-woocommerce' ),
+			'defaultIcon'      => Xdwp_Branding::default_icon_url(),
+			'mediaTitle'       => __( 'Select checkout icon', 'xorro-direct-wallet-payments-woocommerce' ),
+			'mediaButton'      => __( 'Use this icon', 'xorro-direct-wallet-payments-woocommerce' ),
+			'mediaUnavailable' => __( 'Media library is not available.', 'xorro-direct-wallet-payments-woocommerce' ),
 		);
-
 		wp_localize_script( 'xdwp-admin', 'xdwpAdmin', $admin_i18n );
-		// wallets.js also reads window.xdwpAdmin.
-		wp_localize_script( 'xdwp-wallets', 'xdwpAdmin', $admin_i18n );
 	}
 
 	/**
