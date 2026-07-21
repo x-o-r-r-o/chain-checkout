@@ -94,6 +94,10 @@ php tests/smoke-test.php
 
 See [readme.txt](readme.txt).
 
+### 1.5.6
+
+- GitHub update ZIP SHA-256 verification + host allowlist; atomic wallet rotation; zero-conf admin warning
+
 ### 1.5.5
 
 - GitHub Releases auto-updates via WordPress Dashboard (Update URI + release ZIP assets)

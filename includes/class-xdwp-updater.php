@@ -4,6 +4,7 @@
  *
  * Uses the Update URI header + update_plugins_github.com filter so Dashboard
  * and Enable auto-updates work against published release ZIPs.
+ * Downloads are host-allowlisted and verified against the release SHA-256 asset.
  *
  * @package Xdwp
  */
@@ -15,11 +16,11 @@ defined( 'ABSPATH' ) || exit;
  */
 class Xdwp_Updater {
 
-	const REPO          = 'x-o-r-r-o/xorro-direct-wallet-payments-woocommerce';
-	const CACHE_KEY     = 'xdwp_github_latest_release';
-	const CACHE_TTL     = 12 * HOUR_IN_SECONDS;
-	const UPDATE_HOST   = 'github.com';
-	const ASSET_PREFIX  = 'xorro-direct-wallet-payments-woocommerce';
+	const REPO         = 'x-o-r-r-o/xorro-direct-wallet-payments-woocommerce';
+	const CACHE_KEY    = 'xdwp_github_latest_release';
+	const CACHE_TTL    = 12 * HOUR_IN_SECONDS;
+	const UPDATE_HOST  = 'github.com';
+	const ASSET_PREFIX = 'xorro-direct-wallet-payments-woocommerce';
 
 	/**
 	 * Hook into WordPress update APIs.
@@ -28,6 +29,7 @@ class Xdwp_Updater {
 		add_filter( 'update_plugins_' . self::UPDATE_HOST, array( __CLASS__, 'filter_update' ), 10, 4 );
 		add_filter( 'plugins_api', array( __CLASS__, 'plugins_api' ), 20, 3 );
 		add_filter( 'pre_set_site_transient_update_plugins', array( __CLASS__, 'inject_transient' ) );
+		add_filter( 'upgrader_pre_download', array( __CLASS__, 'verify_and_download' ), 10, 3 );
 		add_action( 'upgrader_process_complete', array( __CLASS__, 'clear_cache_after_upgrade' ), 10, 2 );
 	}
 
@@ -58,11 +60,11 @@ class Xdwp_Updater {
 		}
 
 		return array(
-			'slug'    => dirname( XDWP_BASENAME ),
-			'version' => $new_version,
-			'url'     => $release['html_url'],
-			'package' => $release['package'],
-			'tested'  => isset( $plugin_data['RequiresWP'] ) ? $plugin_data['RequiresWP'] : '',
+			'slug'         => dirname( XDWP_BASENAME ),
+			'version'      => $new_version,
+			'url'          => $release['html_url'],
+			'package'      => $release['package'],
+			'tested'       => isset( $plugin_data['RequiresWP'] ) ? $plugin_data['RequiresWP'] : '',
 			'requires_php' => isset( $plugin_data['RequiresPHP'] ) ? $plugin_data['RequiresPHP'] : XDWP_MIN_PHP,
 		);
 	}
@@ -167,6 +169,64 @@ class Xdwp_Updater {
 	}
 
 	/**
+	 * Download our package only from allowlisted hosts and verify SHA-256 when available.
+	 *
+	 * @param bool|WP_Error $reply    Short-circuit value.
+	 * @param string        $package  Package URL.
+	 * @param WP_Upgrader   $upgrader Upgrader.
+	 * @return bool|string|WP_Error Local file path on success.
+	 */
+	public static function verify_and_download( $reply, $package, $upgrader ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
+		if ( false !== $reply ) {
+			return $reply;
+		}
+
+		$release = self::get_latest_release();
+		$ours    = $release && ! empty( $release['package'] ) && hash_equals( (string) $release['package'], (string) $package );
+		if ( ! $ours && ! self::is_our_package_url( $package ) ) {
+			return $reply;
+		}
+
+		if ( ! self::is_allowed_package_url( $package ) ) {
+			return new WP_Error(
+				'xdwp_bad_package_host',
+				__( 'Refused plugin update: package host is not an allowlisted GitHub download host.', 'xorro-direct-wallet-payments-woocommerce' )
+			);
+		}
+
+		if ( ! function_exists( 'download_url' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+
+		$tmp = download_url( $package, 300 );
+		if ( is_wp_error( $tmp ) ) {
+			return $tmp;
+		}
+
+		$expected = ( $release && ! empty( $release['sha256'] ) ) ? strtolower( (string) $release['sha256'] ) : '';
+		if ( '' === $expected && $ours ) {
+			@unlink( $tmp ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			return new WP_Error(
+				'xdwp_missing_checksum',
+				__( 'Refused plugin update: release SHA-256 checksum asset is missing.', 'xorro-direct-wallet-payments-woocommerce' )
+			);
+		}
+
+		if ( '' !== $expected ) {
+			$actual = strtolower( (string) hash_file( 'sha256', $tmp ) );
+			if ( ! $actual || ! hash_equals( $expected, $actual ) ) {
+				@unlink( $tmp ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+				return new WP_Error(
+					'xdwp_hash_mismatch',
+					__( 'Refused plugin update: ZIP SHA-256 does not match the GitHub release checksum.', 'xorro-direct-wallet-payments-woocommerce' )
+				);
+			}
+		}
+
+		return $tmp;
+	}
+
+	/**
 	 * Clear cached release after this plugin is updated.
 	 *
 	 * @param WP_Upgrader $upgrader Upgrader instance.
@@ -185,11 +245,11 @@ class Xdwp_Updater {
 	/**
 	 * Fetch and cache the latest published GitHub release with an installable ZIP.
 	 *
-	 * @return array{version:string,package:string,html_url:string,body:string,published_at:string}|null
+	 * @return array{version:string,package:string,sha256:string,html_url:string,body:string,published_at:string}|null
 	 */
 	private static function get_latest_release() {
 		$cached = get_transient( self::CACHE_KEY );
-		if ( is_array( $cached ) && ! empty( $cached['version'] ) && ! empty( $cached['package'] ) ) {
+		if ( is_array( $cached ) && ! empty( $cached['version'] ) && ! empty( $cached['package'] ) && ! empty( $cached['sha256'] ) ) {
 			return $cached;
 		}
 
@@ -197,14 +257,11 @@ class Xdwp_Updater {
 		$response = wp_remote_get(
 			$url,
 			array(
-				'timeout'    => 15,
-				'headers'    => array(
+				'timeout' => 15,
+				'headers' => array(
 					'Accept'     => 'application/vnd.github+json',
 					'User-Agent' => 'Xdwp/' . XDWP_VERSION . '; WordPress/' . get_bloginfo( 'version' ),
 				),
-				/**
-				 * Allow hosts that block api.github.com via HTTP API filters to still fail closed.
-				 */
 			)
 		);
 
@@ -226,19 +283,29 @@ class Xdwp_Updater {
 			return null;
 		}
 
-		$version = ltrim( (string) $body['tag_name'], "vV" );
+		$version = ltrim( (string) $body['tag_name'], 'vV' );
 		if ( '' === $version || ! preg_match( '/^\d+(\.\d+)*$/', $version ) ) {
 			return null;
 		}
 
-		$package = self::pick_zip_asset( isset( $body['assets'] ) && is_array( $body['assets'] ) ? $body['assets'] : array(), $version );
-		if ( ! $package ) {
+		$assets = isset( $body['assets'] ) && is_array( $body['assets'] ) ? $body['assets'] : array();
+		$picked = self::pick_zip_asset( $assets, $version );
+		if ( empty( $picked['package'] ) || ! self::is_allowed_package_url( $picked['package'] ) ) {
+			return null;
+		}
+
+		$sha256 = '';
+		if ( ! empty( $picked['sha256_url'] ) && self::is_allowed_package_url( $picked['sha256_url'] ) ) {
+			$sha256 = self::fetch_sha256( $picked['sha256_url'] );
+		}
+		if ( '' === $sha256 ) {
 			return null;
 		}
 
 		$data = array(
 			'version'      => $version,
-			'package'      => $package,
+			'package'      => $picked['package'],
+			'sha256'       => $sha256,
 			'html_url'     => isset( $body['html_url'] ) ? (string) $body['html_url'] : ( 'https://github.com/' . self::REPO . '/releases' ),
 			'body'         => isset( $body['body'] ) ? (string) $body['body'] : '',
 			'published_at' => isset( $body['published_at'] ) ? (string) $body['published_at'] : '',
@@ -250,18 +317,17 @@ class Xdwp_Updater {
 	}
 
 	/**
-	 * Choose the WordPress install ZIP from release assets.
-	 *
-	 * Prefers xorro-direct-wallet-payments-woocommerce-{version}.zip, then the unversioned zip.
+	 * Choose ZIP + checksum URLs from release assets.
 	 *
 	 * @param array  $assets  GitHub assets.
 	 * @param string $version Release version.
-	 * @return string Empty if none.
+	 * @return array{package:string,sha256_url:string}
 	 */
 	private static function pick_zip_asset( array $assets, $version ) {
 		$preferred = self::ASSET_PREFIX . '-' . $version . '.zip';
 		$fallback  = self::ASSET_PREFIX . '.zip';
-		$found     = array();
+		$zips      = array();
+		$sums      = array();
 
 		foreach ( $assets as $asset ) {
 			if ( ! is_array( $asset ) ) {
@@ -273,28 +339,96 @@ class Xdwp_Updater {
 				continue;
 			}
 			if ( '.sha256' === substr( $name, -7 ) ) {
+				$sums[ $name ] = $url;
 				continue;
 			}
-			if ( '.zip' !== substr( $name, -4 ) ) {
-				continue;
-			}
-			$found[ $name ] = $url;
-		}
-
-		if ( isset( $found[ $preferred ] ) ) {
-			return $found[ $preferred ];
-		}
-		if ( isset( $found[ $fallback ] ) ) {
-			return $found[ $fallback ];
-		}
-
-		// Last resort: first zip whose name starts with the plugin slug.
-		foreach ( $found as $name => $url ) {
-			if ( 0 === strpos( $name, self::ASSET_PREFIX ) ) {
-				return $url;
+			if ( '.zip' === substr( $name, -4 ) ) {
+				$zips[ $name ] = $url;
 			}
 		}
 
+		$package = '';
+		if ( isset( $zips[ $preferred ] ) ) {
+			$package = $zips[ $preferred ];
+		} elseif ( isset( $zips[ $fallback ] ) ) {
+			$package = $zips[ $fallback ];
+			$preferred = $fallback;
+		} else {
+			foreach ( $zips as $name => $url ) {
+				if ( 0 === strpos( $name, self::ASSET_PREFIX ) ) {
+					$package   = $url;
+					$preferred = $name;
+					break;
+				}
+			}
+		}
+
+		$sha_name = $preferred . '.sha256';
+		$sha_url  = isset( $sums[ $sha_name ] ) ? $sums[ $sha_name ] : '';
+
+		return array(
+			'package'    => $package,
+			'sha256_url' => $sha_url,
+		);
+	}
+
+	/**
+	 * Download and parse a shasum -a 256 checksum file.
+	 *
+	 * @param string $url Checksum asset URL.
+	 * @return string Lowercase hex digest or empty.
+	 */
+	private static function fetch_sha256( $url ) {
+		$response = wp_remote_get(
+			$url,
+			array(
+				'timeout' => 15,
+				'headers' => array(
+					'User-Agent' => 'Xdwp/' . XDWP_VERSION . '; WordPress/' . get_bloginfo( 'version' ),
+				),
+			)
+		);
+		if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
+			return '';
+		}
+		$body = trim( (string) wp_remote_retrieve_body( $response ) );
+		if ( '' === $body ) {
+			return '';
+		}
+		// Formats: "<hash>  <filename>" or bare "<hash>".
+		if ( preg_match( '/\b([a-fA-F0-9]{64})\b/', $body, $m ) ) {
+			return strtolower( $m[1] );
+		}
 		return '';
+	}
+
+	/**
+	 * Whether a URL is a GitHub release download for this plugin.
+	 *
+	 * @param string $url Package URL.
+	 * @return bool
+	 */
+	private static function is_our_package_url( $url ) {
+		if ( ! self::is_allowed_package_url( $url ) ) {
+			return false;
+		}
+		$path = (string) wp_parse_url( $url, PHP_URL_PATH );
+		return false !== strpos( $path, '/' . self::REPO . '/' ) && false !== strpos( $path, self::ASSET_PREFIX );
+	}
+
+	/**
+	 * Allow only GitHub download hosts.
+	 *
+	 * @param string $url URL.
+	 * @return bool
+	 */
+	private static function is_allowed_package_url( $url ) {
+		$host = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
+		$ok   = array(
+			'github.com',
+			'objects.githubusercontent.com',
+			'release-assets.githubusercontent.com',
+		);
+		return in_array( $host, $ok, true );
 	}
 }

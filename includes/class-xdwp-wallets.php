@@ -203,20 +203,20 @@ class Xdwp_Wallets {
 		$mod = max( 1, (int) $mod );
 		add_option( $option, 0, '', 'no' );
 
+		// Atomic increment via LAST_INSERT_ID (connection-local), then return previous slot.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query(
 			$wpdb->prepare(
-				"UPDATE {$wpdb->options} SET option_value = ( CAST(option_value AS UNSIGNED) + 1 ) % %d WHERE option_name = %s",
+				"UPDATE {$wpdb->options} SET option_value = LAST_INSERT_ID( ( CAST(option_value AS UNSIGNED) + 1 ) % %d ) WHERE option_name = %s",
 				$mod,
 				$option
 			)
 		);
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$value = (int) $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", $option ) );
+		$value = (int) $wpdb->get_var( 'SELECT LAST_INSERT_ID()' );
 		wp_cache_delete( $option, 'options' );
 
-		// Value is post-increment; return previous slot.
 		return ( $value - 1 + $mod ) % $mod;
 	}
 }

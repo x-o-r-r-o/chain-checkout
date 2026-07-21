@@ -151,7 +151,7 @@ xdwp_assert( false !== strpos( $ajax, 'xdwp_status_' ), 'ajax order-bound nonce'
 
 // --- Headers ---
 $main = file_get_contents( $root . '/xorro-direct-wallet-payments-woocommerce.php' );
-xdwp_assert( false !== strpos( $main, 'Version:           1.5.5' ), 'plugin version 1.5.5' );
+xdwp_assert( false !== strpos( $main, 'Version:           1.5.6' ), 'plugin version 1.5.6' );
 xdwp_assert( false !== strpos( $main, 'Author:            xorro' ), 'author is xorro' );
 xdwp_assert( false !== strpos( $main, 'Author URI:        https://github.com/x-o-r-r-o/xorro-direct-wallet-payments-woocommerce' ), 'author URI is GitHub repo' );
 xdwp_assert( false === strpos( $main, 'Author URI:        https://wordpress.org/plugins/xdwp' ), 'author URI not same as plugin URI' );
@@ -210,11 +210,11 @@ xdwp_assert( false !== strpos( $readme_md, 'Checkout branding' ), 'README.md bra
 
 $readme = file_get_contents( $root . '/readme.txt' );
 xdwp_assert( false !== strpos( $readme, 'Tested up to: 7.0' ), 'readme Tested up to WP 7.0' );
-xdwp_assert( false !== strpos( $readme, 'Stable tag: 1.5.5' ), 'readme stable 1.5.5' );
+xdwp_assert( false !== strpos( $readme, 'Stable tag: 1.5.6' ), 'readme stable 1.5.6' );
 
 $readme = file_get_contents( $root . '/readme.txt' );
 xdwp_assert( false !== strpos( $readme, '== External services ==' ), 'readme external services section' );
-xdwp_assert( false !== strpos( $readme, '1.5.5' ), 'readme 1.5.5 changelog' );
+xdwp_assert( false !== strpos( $readme, '1.5.6' ), 'readme 1.5.6 changelog' );
 $privacy = file_get_contents( $root . '/includes/class-xdwp-privacy.php' );
 xdwp_assert( false !== strpos( $privacy, 'wp_add_privacy_policy_content' ), 'privacy policy content registered' );
 xdwp_assert( is_file( $root . '/assets/js/qrcode.LICENSE.txt' ), 'qrcode license attribution' );
@@ -227,6 +227,9 @@ xdwp_assert( false !== strpos( $main, 'Update URI:        https://github.com/x-o
 xdwp_assert( is_readable( $root . '/includes/class-xdwp-updater.php' ), 'GitHub updater class present' );
 xdwp_assert( false !== strpos( file_get_contents( $root . '/includes/class-xdwp-updater.php' ), 'update_plugins_github.com' ), 'updater hooks update_plugins_github.com' );
 xdwp_assert( false !== strpos( file_get_contents( $root . '/includes/class-xdwp-updater.php' ), 'releases/latest' ), 'updater fetches GitHub latest release' );
+xdwp_assert( false !== strpos( file_get_contents( $root . '/includes/class-xdwp-updater.php' ), 'hash_file' ), 'updater verifies ZIP sha256' );
+xdwp_assert( false !== strpos( file_get_contents( $root . '/includes/class-xdwp-updater.php' ), 'is_allowed_package_url' ), 'updater allowlists package hosts' );
+xdwp_assert( false !== strpos( file_get_contents( $root . '/includes/class-xdwp-wallets.php' ), 'LAST_INSERT_ID' ), 'wallet rotation uses LAST_INSERT_ID' );
 xdwp_assert( false === strpos( file_get_contents( $root . '/includes/class-xdwp.php' ), 'load_plugin_textdomain' ), 'no load_plugin_textdomain' );
 xdwp_assert( false === strpos( file_get_contents( $root . '/includes/admin/class-xdwp-admin.php' ), "echo '<style" ), 'admin has no raw style echo' );
 xdwp_assert( false === strpos( file_get_contents( $root . '/includes/admin/class-xdwp-admin.php' ), '<link rel="stylesheet"' ), 'admin has no raw stylesheet link' );

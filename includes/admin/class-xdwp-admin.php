@@ -20,6 +20,7 @@ class Xdwp_Admin {
 		add_action( 'admin_init', array( __CLASS__, 'handle_save' ) );
 		add_action( 'admin_notices', array( __CLASS__, 'setup_notice' ) );
 		add_action( 'admin_notices', array( __CLASS__, 'api_key_notice' ) );
+		add_action( 'admin_notices', array( __CLASS__, 'confirmations_notice' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
 		add_filter( 'admin_body_class', array( __CLASS__, 'admin_body_class' ) );
 		add_filter( 'plugin_action_links_' . XDWP_BASENAME, array( __CLASS__, 'action_links' ) );
@@ -352,6 +353,29 @@ class Xdwp_Admin {
 				),
 			)
 		);
+		echo '</p></div>';
+	}
+
+	/**
+	 * Warn when min confirmations is 0 (accepts unconfirmed payments).
+	 */
+	public static function confirmations_notice() {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			return;
+		}
+		if ( 'yes' !== Xdwp_Settings::get( 'auto_verify', 'yes' ) ) {
+			return;
+		}
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( ! $screen || false === strpos( (string) $screen->id, 'xorro-direct-wallet-payments-woocommerce' ) ) {
+			return;
+		}
+		$min = (int) Xdwp_Settings::get( 'min_confirmations', 1 );
+		if ( $min > 0 ) {
+			return;
+		}
+		echo '<div class="notice notice-warning"><p>';
+		echo esc_html__( 'Minimum confirmations is set to 0. Automatic verification may mark orders paid on unconfirmed transactions. Raise this under General unless you intentionally accept zero-conf risk.', 'xorro-direct-wallet-payments-woocommerce' );
 		echo '</p></div>';
 	}
 
