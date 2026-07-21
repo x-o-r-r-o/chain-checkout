@@ -17,8 +17,8 @@ class Chain_Checkout_Gateway extends WC_Payment_Gateway {
 	 */
 	public function __construct() {
 		$this->id                 = CHAIN_CHECKOUT_GATEWAY_ID;
-		$this->method_title       = __( 'Chain Checkout', 'chain-checkout' );
-		$this->method_description = __( 'Accept cryptocurrency payments directly to your own wallets with automatic on-chain verification.', 'chain-checkout' );
+		$this->method_title       = __( 'Xorro Wallet Payments', 'xorro-direct-wallet-payments-woocommerce' );
+		$this->method_description = __( 'Accept cryptocurrency payments directly to your own wallets with automatic on-chain verification.', 'xorro-direct-wallet-payments-woocommerce' );
 		$this->has_fields         = true;
 		$this->supports           = array( 'products' );
 
@@ -74,31 +74,31 @@ class Chain_Checkout_Gateway extends WC_Payment_Gateway {
 	public function init_form_fields() {
 		$this->form_fields = array(
 			'enabled'     => array(
-				'title'   => __( 'Enable/Disable', 'chain-checkout' ),
+				'title'   => __( 'Enable/Disable', 'xorro-direct-wallet-payments-woocommerce' ),
 				'type'    => 'checkbox',
-				'label'   => __( 'Enable Chain Checkout', 'chain-checkout' ),
+				'label'   => __( 'Enable Xorro Wallet Payments', 'xorro-direct-wallet-payments-woocommerce' ),
 				'default' => 'no',
 			),
 			'title'       => array(
-				'title'       => __( 'Title', 'chain-checkout' ),
+				'title'       => __( 'Title', 'xorro-direct-wallet-payments-woocommerce' ),
 				'type'        => 'text',
-				'description' => __( 'Payment method title shown at checkout.', 'chain-checkout' ),
-				'default'     => __( 'Pay with Cryptocurrency', 'chain-checkout' ),
+				'description' => __( 'Payment method title shown at checkout.', 'xorro-direct-wallet-payments-woocommerce' ),
+				'default'     => __( 'Pay with Cryptocurrency', 'xorro-direct-wallet-payments-woocommerce' ),
 				'desc_tip'    => true,
 			),
 			'description' => array(
-				'title'       => __( 'Description', 'chain-checkout' ),
+				'title'       => __( 'Description', 'xorro-direct-wallet-payments-woocommerce' ),
 				'type'        => 'textarea',
-				'description' => __( 'Payment method description shown at checkout.', 'chain-checkout' ),
-				'default'     => __( 'Pay directly to our wallet with cryptocurrency. No third-party processor.', 'chain-checkout' ),
+				'description' => __( 'Payment method description shown at checkout.', 'xorro-direct-wallet-payments-woocommerce' ),
+				'default'     => __( 'Pay directly to our wallet with cryptocurrency. No third-party processor.', 'xorro-direct-wallet-payments-woocommerce' ),
 			),
 			'instructions'=> array(
-				'title'       => __( 'Configuration', 'chain-checkout' ),
+				'title'       => __( 'Configuration', 'xorro-direct-wallet-payments-woocommerce' ),
 				'type'        => 'title',
 				'description' => sprintf(
 					/* translators: %s: admin URL */
-					__( 'Configure coins, wallets, prices, and API keys under %s.', 'chain-checkout' ),
-					'<a href="' . esc_url( admin_url( 'admin.php?page=chain-checkout' ) ) . '">' . esc_html__( 'Chain Checkout settings', 'chain-checkout' ) . '</a>'
+					__( 'Configure coins, wallets, prices, and API keys under %s.', 'xorro-direct-wallet-payments-woocommerce' ),
+					'<a href="' . esc_url( admin_url( 'admin.php?page=chain-checkout' ) ) . '">' . esc_html__( 'Xorro Wallet Payments settings', 'xorro-direct-wallet-payments-woocommerce' ) . '</a>'
 				),
 			),
 		);
@@ -206,16 +206,20 @@ class Chain_Checkout_Gateway extends WC_Payment_Gateway {
 	}
 
 	/**
-	 * Critical coin-picker CSS — works even if the stylesheet fails to load.
+	 * Critical coin-picker CSS via wp_add_inline_style (works even if the stylesheet is late).
 	 */
 	private function print_critical_coin_css() {
-		static $printed = false;
-		if ( $printed ) {
+		static $added = false;
+		if ( $added ) {
 			return;
 		}
-		$printed = true;
-		echo '<style id="chain-checkout-coin-critical">'
-			. '.chain-checkout-coin-grid{display:flex;flex-wrap:wrap;margin:-5px;}'
+		$added = true;
+
+		if ( ! wp_style_is( 'chain-checkout-frontend', 'enqueued' ) ) {
+			wp_enqueue_style( 'chain-checkout-frontend' );
+		}
+
+		$css = '.chain-checkout-coin-grid{display:flex;flex-wrap:wrap;margin:-5px;}'
 			. '.chain-checkout-coin-option{position:relative;display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:48px;height:54px;margin:5px;padding:0;cursor:pointer;border:1px solid #ddd;border-radius:5px;background:#f7f7f7;overflow:hidden;}'
 			. '.chain-checkout-coin-option input{position:absolute;opacity:0;width:0;height:0;margin:0;padding:0;appearance:none;}'
 			. '.chain-checkout-coin-option:hover,.chain-checkout-coin-option:has(input:checked),.chain-checkout-coin-option.is-selected{border-color:#000;}'
@@ -225,8 +229,9 @@ class Chain_Checkout_Gateway extends WC_Payment_Gateway {
 			. '.chain-checkout-coin-option__badge img{width:14px!important;height:14px!important;object-fit:contain!important;display:block;}'
 			. '.chain-checkout-coin-option__sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}'
 			. '.chain-checkout-coin-option--text{width:auto;min-width:48px;height:auto;min-height:54px;padding:8px 10px;}'
-			. '.chain-checkout-coin-option__text{font-size:11px;font-weight:700;line-height:1.2;color:#111;}'
-			. '</style>';
+			. '.chain-checkout-coin-option__text{font-size:11px;font-weight:700;line-height:1.2;color:#111;}';
+
+		wp_add_inline_style( 'chain-checkout-frontend', $css );
 	}
 
 	/**
@@ -291,7 +296,7 @@ class Chain_Checkout_Gateway extends WC_Payment_Gateway {
 
 		$coins = Chain_Checkout_Coins::get_payable();
 		if ( empty( $coins ) ) {
-			echo '<p>' . esc_html__( 'No cryptocurrencies are configured.', 'chain-checkout' ) . '</p>';
+			echo '<p>' . esc_html__( 'No cryptocurrencies are configured.', 'xorro-direct-wallet-payments-woocommerce' ) . '</p>';
 			return;
 		}
 
@@ -302,7 +307,7 @@ class Chain_Checkout_Gateway extends WC_Payment_Gateway {
 		}
 
 		echo '<fieldset class="chain-checkout-coins" id="chain-checkout-coins">';
-		echo '<legend>' . esc_html__( 'Select cryptocurrency', 'chain-checkout' ) . '</legend>';
+		echo '<legend>' . esc_html__( 'Select cryptocurrency', 'xorro-direct-wallet-payments-woocommerce' ) . '</legend>';
 		echo '<div class="chain-checkout-coin-grid">';
 
 		$first = true;
@@ -355,7 +360,7 @@ class Chain_Checkout_Gateway extends WC_Payment_Gateway {
 		$payable = Chain_Checkout_Coins::get_payable();
 
 		if ( ! $coin_id || ! isset( $payable[ $coin_id ] ) ) {
-			wc_add_notice( __( 'Please select a cryptocurrency to pay with.', 'chain-checkout' ), 'error' );
+			wc_add_notice( __( 'Please select a cryptocurrency to pay with.', 'xorro-direct-wallet-payments-woocommerce' ), 'error' );
 			return false;
 		}
 
@@ -371,7 +376,7 @@ class Chain_Checkout_Gateway extends WC_Payment_Gateway {
 	public function process_payment( $order_id ) {
 		$order = wc_get_order( $order_id );
 		if ( ! $order ) {
-			wc_add_notice( __( 'Invalid order.', 'chain-checkout' ), 'error' );
+			wc_add_notice( __( 'Invalid order.', 'xorro-direct-wallet-payments-woocommerce' ), 'error' );
 			return array( 'result' => 'failure' );
 		}
 
@@ -379,13 +384,13 @@ class Chain_Checkout_Gateway extends WC_Payment_Gateway {
 		$payable = Chain_Checkout_Coins::get_payable();
 
 		if ( ! $coin_id || ! isset( $payable[ $coin_id ] ) ) {
-			wc_add_notice( __( 'Selected cryptocurrency is not available.', 'chain-checkout' ), 'error' );
+			wc_add_notice( __( 'Selected cryptocurrency is not available.', 'xorro-direct-wallet-payments-woocommerce' ), 'error' );
 			return array( 'result' => 'failure' );
 		}
 
 		$ok = Chain_Checkout_Order::assign_payment( $order, $coin_id );
 		if ( ! $ok ) {
-			wc_add_notice( __( 'Unable to create crypto payment. Check wallet and price settings, then try again.', 'chain-checkout' ), 'error' );
+			wc_add_notice( __( 'Unable to create crypto payment. Check wallet and price settings, then try again.', 'xorro-direct-wallet-payments-woocommerce' ), 'error' );
 			return array( 'result' => 'failure' );
 		}
 

@@ -47,13 +47,13 @@ jobs:
         run: |
           chmod +x bin/build-zip.sh
           bin/build-zip.sh "${RUNNER_TEMP}"
-          cp "${RUNNER_TEMP}/chain-checkout.zip" "chain-checkout-${{ steps.meta.outputs.version }}.zip"
-          cp "${RUNNER_TEMP}/chain-checkout-${{ steps.meta.outputs.version }}.zip.sha256" .
+          cp "${RUNNER_TEMP}/xorro-direct-wallet-payments-woocommerce.zip" "xorro-direct-wallet-payments-woocommerce-${{ steps.meta.outputs.version }}.zip"
+          cp "${RUNNER_TEMP}/xorro-direct-wallet-payments-woocommerce-${{ steps.meta.outputs.version }}.zip.sha256" .
 
       - name: Attest build provenance
         uses: actions/attest-build-provenance@v2
         with:
-          subject-path: chain-checkout-${{ steps.meta.outputs.version }}.zip
+          subject-path: xorro-direct-wallet-payments-woocommerce-${{ steps.meta.outputs.version }}.zip
 
       - name: Create GitHub Release
         env:
@@ -63,16 +63,16 @@ jobs:
           VERSION="${{ steps.meta.outputs.version }}"
           NOTES="$(awk "/^= ${VERSION} =/{flag=1; next} /^= /{flag=0} flag" readme.txt | sed '/^$/d' | sed 's/^\* /- /')"
           if [ -z "${NOTES}" ]; then
-            NOTES="Chain Checkout ${VERSION} WordPress plugin package."
+            NOTES="${NAME} ${VERSION} WordPress plugin package."
           fi
           BODY=$(printf '%s\n\n%s\n\n%s\n%s\n' \
-            "## Chain Checkout ${VERSION}" \
+            "## ${NAME} ${VERSION}" \
             "${NOTES}" \
-            "Install via **Plugins → Add New → Upload** using \`chain-checkout-${VERSION}.zip\`." \
+            "Install via **Plugins → Add New → Upload** using \`xorro-direct-wallet-payments-woocommerce-${VERSION}.zip\`." \
             "This release is published with immutable release + build provenance attestations when enabled on the repository.")
           gh release create "${TAG}" \
-            --title "Chain Checkout ${VERSION}" \
+            --title "${NAME} ${VERSION}" \
             --notes "${BODY}" \
             --target "${{ github.sha }}" \
-            "chain-checkout-${VERSION}.zip#chain-checkout-${VERSION}.zip (WordPress install package)" \
-            "chain-checkout-${VERSION}.zip.sha256#SHA-256 checksum"
+            "xorro-direct-wallet-payments-woocommerce-${VERSION}.zip#xorro-direct-wallet-payments-woocommerce-${VERSION}.zip (WordPress install package)" \
+            "xorro-direct-wallet-payments-woocommerce-${VERSION}.zip.sha256#SHA-256 checksum"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build a clean WordPress plugin ZIP (top-level folder: chain-checkout/).
+# Build a clean WordPress plugin ZIP (top-level folder matches plugin slug).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -11,13 +11,18 @@ if [[ -z "${VERSION}" ]]; then
 	exit 1
 fi
 
+# wordpress.org plugin slug / zip folder name
+PLUGIN_SLUG="${PLUGIN_SLUG:-xorro-direct-wallet-payments-woocommerce}"
+
 OUT_DIR="${1:-$(dirname "$ROOT")}"
 STAGE="${TMPDIR:-/tmp}/chain-checkout-dist-$$"
-ZIP_PATH="${OUT_DIR}/chain-checkout.zip"
-ZIP_VERSIONED="${OUT_DIR}/chain-checkout-${VERSION}.zip"
+ZIP_PATH="${OUT_DIR}/${PLUGIN_SLUG}.zip"
+ZIP_VERSIONED="${OUT_DIR}/${PLUGIN_SLUG}-${VERSION}.zip"
+# Keep legacy filename alias for existing scripts/docs.
+ZIP_LEGACY="${OUT_DIR}/chain-checkout-${VERSION}.zip"
 
 rm -rf "${STAGE}"
-mkdir -p "${STAGE}/chain-checkout"
+mkdir -p "${STAGE}/${PLUGIN_SLUG}"
 
 # Prefer rsync + .distignore-style excludes (keep runtime plugin files only).
 rsync -a \
@@ -29,6 +34,7 @@ rsync -a \
 	--exclude='**/.DS_Store' \
 	--exclude='tests/' \
 	--exclude='bin/' \
+	--exclude='releases/' \
 	--exclude='.phpunit*' \
 	--exclude='.phpcs*' \
 	--exclude='composer.json' \
@@ -44,22 +50,25 @@ rsync -a \
 	--exclude='.cursor/' \
 	--exclude='.distignore' \
 	--exclude='*.zip' \
-	./ "${STAGE}/chain-checkout/"
+	./ "${STAGE}/${PLUGIN_SLUG}/"
 
-test -f "${STAGE}/chain-checkout/chain-checkout.php"
-test -f "${STAGE}/chain-checkout/readme.txt"
-test ! -d "${STAGE}/chain-checkout/tests"
-test ! -d "${STAGE}/chain-checkout/.git"
+test -f "${STAGE}/${PLUGIN_SLUG}/chain-checkout.php"
+test -f "${STAGE}/${PLUGIN_SLUG}/readme.txt"
+test ! -d "${STAGE}/${PLUGIN_SLUG}/tests"
+test ! -d "${STAGE}/${PLUGIN_SLUG}/.git"
 
-rm -f "${ZIP_PATH}" "${ZIP_VERSIONED}"
-( cd "${STAGE}" && zip -r -q "${ZIP_PATH}" chain-checkout )
+rm -f "${ZIP_PATH}" "${ZIP_VERSIONED}" "${ZIP_LEGACY}"
+( cd "${STAGE}" && zip -r -q "${ZIP_PATH}" "${PLUGIN_SLUG}" )
 cp -f "${ZIP_PATH}" "${ZIP_VERSIONED}"
+cp -f "${ZIP_PATH}" "${ZIP_LEGACY}"
 shasum -a 256 "${ZIP_PATH}" > "${ZIP_VERSIONED}.sha256"
+cp -f "${ZIP_VERSIONED}.sha256" "${ZIP_LEGACY}.sha256"
 
 rm -rf "${STAGE}"
 
-echo "Built WordPress ZIP v${VERSION}"
+echo "Built WordPress ZIP v${VERSION} (folder: ${PLUGIN_SLUG}/)"
 echo "  ${ZIP_PATH}"
 echo "  ${ZIP_VERSIONED}"
+echo "  ${ZIP_LEGACY}"
 echo "  ${ZIP_VERSIONED}.sha256"
-ls -lh "${ZIP_PATH}" "${ZIP_VERSIONED}"
+ls -lh "${ZIP_PATH}" "${ZIP_VERSIONED}" "${ZIP_LEGACY}"

@@ -64,7 +64,6 @@ final class Chain_Checkout {
 	 * Register hooks.
 	 */
 	private function hooks() {
-		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_filter( 'cron_schedules', array( $this, 'add_cron_schedules' ) );
 		add_filter( 'woocommerce_payment_gateways', array( $this, 'register_gateway' ) );
 		add_action( 'woocommerce_blocks_loaded', array( $this, 'register_blocks_support' ) );
@@ -80,13 +79,6 @@ final class Chain_Checkout {
 	}
 
 	/**
-	 * Load translations.
-	 */
-	public function load_textdomain() {
-		load_plugin_textdomain( 'chain-checkout', false, dirname( CHAIN_CHECKOUT_BASENAME ) . '/languages' );
-	}
-
-	/**
 	 * Custom cron intervals.
 	 *
 	 * @param array $schedules Existing schedules.
@@ -95,7 +87,7 @@ final class Chain_Checkout {
 	public function add_cron_schedules( $schedules ) {
 		$schedules['chain_checkout_every_minute'] = array(
 			'interval' => 60,
-			'display'  => __( 'Every Minute (Chain Checkout)', 'chain-checkout' ),
+			'display'  => __( 'Every Minute (Xorro Wallet Payments)', 'xorro-direct-wallet-payments-woocommerce' ),
 		);
 		return $schedules;
 	}

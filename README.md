@@ -1,4 +1,4 @@
-# Chain Checkout
+# Xorro Direct Wallet Payments for WooCommerce
 
 WordPress / WooCommerce payment gateway for accepting cryptocurrency **directly to your own wallets** — no third-party processor, no license keys, no phone-home.
 
@@ -33,13 +33,13 @@ HTTPS is strongly recommended.
 
 ## Installation
 
-1. Download the latest release ZIP (exclude `tests/` and `.git` from wordpress.org packages), or clone into `wp-content/plugins/chain-checkout`.
-2. Activate **Chain Checkout** in WordPress.
-3. Go to **Chain Checkout → Coins** and enable the assets you accept.
-4. Go to **Chain Checkout → Wallets** and add receiving addresses (`+ Add address` for rotation).
+1. Download the latest release ZIP (exclude `tests/` and `.git` from wordpress.org packages), or clone into `wp-content/plugins/xorro-direct-wallet-payments-woocommerce`.
+2. Activate **Xorro Direct Wallet Payments for WooCommerce** in WordPress.
+3. Go to **Xorro Wallet Payments → Coins** and enable the assets you accept.
+4. Go to **Xorro Wallet Payments → Wallets** and add receiving addresses (`+ Add address` for rotation).
 5. Configure rates & explorer keys under **Prices & APIs**.
 6. Enable the gateway under **WooCommerce → Settings → Payments → Chain Checkout**.
-7. (Optional) Under **Chain Checkout → General**, set checkout title, icon, size, and whether to show icon, text, or both.
+7. (Optional) Under **Xorro Wallet Payments → General**, set checkout title, icon, size, and whether to show icon, text, or both.
 
 ## External services
 
@@ -47,7 +47,7 @@ This plugin does **not** send data to the author’s servers. It may contact pub
 
 ## Checkout branding
 
-On **Chain Checkout → General**:
+On **Xorro Wallet Payments → General**:
 
 - **Checkout title** — e.g. “Pay with Cryptocurrency”
 - **Checkout description** — shown under the method when selected
@@ -72,6 +72,10 @@ php tests/smoke-test.php
 ## Changelog
 
 See [readme.txt](readme.txt).
+
+### 1.4.5
+
+- Renamed for wordpress.org distinctiveness; proper CSS/JS enqueue; fuller external-service docs; removed load_plugin_textdomain
 
 ### 1.4.4
 
@@ -130,5 +134,5 @@ GPL-2.0-or-later. See [LICENSE](LICENSE).
 Before uploading to [Add Plugin](https://wordpress.org/plugins/developers/add/):
 
 1. `Contributors:` in `readme.txt` is set to **xorro** (your WordPress.org username).
-2. Upload a ZIP of the `chain-checkout` folder **without** `.git/` or `tests/`.
+2. Upload a ZIP of the `xorro-direct-wallet-payments-woocommerce` folder **without** `.git/` or `tests/`.
 3. Confirm Plugin URI ≠ Author URI (already set).

@@ -86,7 +86,7 @@ final class Chain_Checkout_Blocks extends AbstractPaymentMethodType {
 		);
 
 		if ( function_exists( 'wp_set_script_translations' ) ) {
-			wp_set_script_translations( $handle, 'chain-checkout', CHAIN_CHECKOUT_PATH . 'languages' );
+			wp_set_script_translations( $handle, 'xorro-direct-wallet-payments-woocommerce', CHAIN_CHECKOUT_PATH . 'languages' );
 		}
 
 		return array( $handle );

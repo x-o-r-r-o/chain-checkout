@@ -1,10 +1,10 @@
-=== Chain Checkout ===
+=== Xorro Direct Wallet Payments for WooCommerce ===
 Contributors: xorro
 Tags: woocommerce, cryptocurrency, bitcoin, ethereum, payments, usdt, crypto checkout
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Accept cryptocurrency payments directly to your own wallets — no third-party p
 
 == Description ==
 
-Chain Checkout is a WooCommerce payment gateway that lets customers pay with cryptocurrency straight to wallets you control. There is no payment processor holding funds, no license key, and no phone-home licensing.
+Xorro Direct Wallet Payments for WooCommerce is a WooCommerce payment gateway that lets customers pay with cryptocurrency straight to wallets you control. There is no payment processor holding funds, no license key, and no phone-home licensing.
 
 This plugin contacts public price and blockchain APIs to quote amounts and (optionally) verify payments. See **External services** below for details, data shared, and privacy links.
 
@@ -41,13 +41,13 @@ This plugin contacts public price and blockchain APIs to quote amounts and (opti
 
 == Installation ==
 
-1. Upload the `chain-checkout` folder to `/wp-content/plugins/` or install the ZIP via Plugins → Add New → Upload.
-2. Activate **Chain Checkout**.
-3. Go to **Chain Checkout → Coins** and enable the assets you accept.
-4. Go to **Chain Checkout → Wallets** and add receiving addresses (use **+ Add address** for multiple / rotation).
+1. Upload the `xorro-direct-wallet-payments-woocommerce` folder to `/wp-content/plugins/` or install the ZIP via Plugins → Add New → Upload.
+2. Activate **Xorro Direct Wallet Payments for WooCommerce**.
+3. Go to **Xorro Wallet Payments → Coins** and enable the assets you accept.
+4. Go to **Xorro Wallet Payments → Wallets** and add receiving addresses (use **+ Add address** for multiple / rotation).
 5. Add API keys under **Prices & APIs** (Etherscan V2 recommended; TronGrid/Helius/Subscan/ViewBlock optional).
-6. Under **Chain Checkout → General**, set the checkout title, icon, size, and whether to show icon, text, or both.
-7. Enable the gateway under **WooCommerce → Settings → Payments → Chain Checkout**.
+6. Under **Xorro Wallet Payments → General**, set the checkout title, icon, size, and whether to show icon, text, or both.
+7. Enable the gateway under **WooCommerce → Settings → Payments → Xorro Wallet Payments**.
 
 == Frequently Asked Questions ==
 
@@ -57,7 +57,7 @@ No. Customers pay your wallet addresses directly. Public APIs are used only for 
 
 = How do I change the checkout icon or title? =
 
-Go to **Chain Checkout → General**. You can edit the title (e.g. “Pay with Cryptocurrency”), upload or reset the icon, set width/height (16–128px), and choose Icon and text, Icon only, or Text only.
+Go to **Xorro Wallet Payments → General**. You can edit the title (e.g. “Pay with Cryptocurrency”), upload or reset the icon, set width/height (16–128px), and choose Icon and text, Icon only, or Text only.
 
 = Which free API keys should I add? =
 
@@ -76,7 +76,7 @@ Never. Only public receiving addresses are stored.
 
 = Will it work with Checkout Blocks? =
 
-Yes. Chain Checkout registers a Blocks payment method and declares cart/checkout blocks compatibility.
+Yes. This plugin registers a Blocks payment method and declares cart/checkout blocks compatibility.
 
 = Will it work with my theme? =
 
@@ -84,11 +84,11 @@ Yes. It uses the WooCommerce payment gateway API and scoped CSS classes.
 
 = What third-party services does this plugin use? =
 
-See the **External services** section below. Automatic verification can be turned off under Chain Checkout → General. Disabling the gateway stops checkout-related API calls.
+See the **External services** section below. Automatic verification can be turned off under Xorro Wallet Payments → General. Disabling the gateway stops checkout-related API calls.
 
 == External services ==
 
-Chain Checkout does **not** phone home to the plugin author. It may contact the following third-party services when crypto checkout or automatic verification is used. Optional API keys you configure are sent only to the matching provider.
+This plugin does **not** phone home to the plugin author. It may contact the following third-party services when crypto checkout or automatic verification is used. Optional API keys you configure are sent only to the matching provider. Automatic verification can be disabled under Xorro Wallet Payments → General.
 
 = CoinGecko (exchange rates) =
 
@@ -101,7 +101,7 @@ Chain Checkout does **not** phone home to the plugin author. It may contact the 
 
 = Etherscan API V2 (EVM verification) =
 
-* Purpose: Detect inbound payments on Ethereum and other EVM networks.
+* Purpose: Detect inbound payments on Ethereum and other EVM networks (BNB Chain, Polygon, Arbitrum, Optimism, Base, Avalanche, Fantom, Cronos, Ethereum Classic, and related chains).
 * Data: Wallet addresses, optional transaction IDs, your API key if configured.
 * When: Automatic verification (can be disabled).
 * Site: https://etherscan.io/
@@ -114,7 +114,7 @@ Chain Checkout does **not** phone home to the plugin author. It may contact the 
 * Data: Bitcoin addresses / transaction data needed for matching.
 * When: Automatic verification for BTC.
 * Sites: https://mempool.space/ , https://blockstream.info/
-* mempool.space terms/privacy: https://mempool.space/about
+* mempool.space about/privacy: https://mempool.space/about
 * Blockstream: https://blockstream.com/
 
 = Blockchair (Bitcoin Cash / Litecoin / Dogecoin) =
@@ -127,11 +127,13 @@ Chain Checkout does **not** phone home to the plugin author. It may contact the 
 
 = TronGrid (TRON) =
 
-* Purpose: Detect TRX / TRC-20 payments.
+* Purpose: Detect TRX / TRC-20 payments (including USDT/USDC on TRON).
 * Data: Addresses / transactions; optional API key.
 * When: Automatic verification for TRON assets.
 * Site: https://www.trongrid.io/
-* Docs/terms: https://developers.tron.network/
+* Docs: https://developers.tron.network/
+* Terms: https://www.tron.network/legal#termsOfUse
+* Privacy: https://www.tron.network/legal#privacyPolicy
 
 = Solana RPC / Helius =
 
@@ -139,23 +141,111 @@ Chain Checkout does **not** phone home to the plugin author. It may contact the 
 * Data: Addresses / signatures; optional Helius API key.
 * When: Automatic verification for Solana assets.
 * Sites: https://solana.com/ , https://www.helius.dev/
+* Solana terms: https://solana.com/tos
 * Helius privacy: https://www.helius.dev/privacy-policy
+* Helius terms: https://www.helius.dev/terms-of-service
 
-= Other public explorers / RPCs (auto-verify) =
+= XRPSCan (XRP) =
 
-Used only for the matching coin when automatic verification is enabled: XRPSCan (XRP), Stellar Horizon (XLM), AlgoNode (ALGO), Hedera Mirror (HBAR), NearBlocks (NEAR), PublicNode Cosmos REST (ATOM), MultiversX API (EGLD), Filfox (FIL), Greymass EOS history (EOS), Subscan (DOT), ViewBlock (ZIL). Requests typically include public addresses and transaction identifiers.
+* Purpose: Detect XRP payments.
+* Data: XRP account addresses and payment transaction data.
+* When: Automatic verification for XRP.
+* Site: https://xrpscan.com/
+* Terms: https://docs.xrpscan.com/help/terms-of-service
+* Privacy: https://docs.xrpscan.com/help/privacy-policy
 
-* XRPSCan: https://xrpscan.com/
-* Stellar Horizon: https://developers.stellar.org/
-* AlgoNode: https://algonode.cloud/
-* Hedera Mirror: https://docs.hedera.com/
-* NearBlocks: https://nearblocks.io/
-* PublicNode: https://publicnode.com/
-* MultiversX: https://multiversx.com/
-* Filfox: https://filfox.info/
-* Greymass: https://greymass.com/
-* Subscan: https://www.subscan.io/
-* ViewBlock: https://viewblock.io/
+= Stellar Horizon (XLM) =
+
+* Purpose: Detect Stellar payments.
+* Data: Stellar account addresses and payment records.
+* When: Automatic verification for XLM.
+* Site: https://developers.stellar.org/
+* Horizon: https://horizon.stellar.org/
+* Terms: https://www.stellar.org/terms-of-service
+* Privacy: https://www.stellar.org/privacy-policy
+
+= AlgoNode (Algorand) =
+
+* Purpose: Detect ALGO payments.
+* Data: Algorand account addresses and payment transactions.
+* When: Automatic verification for ALGO.
+* Site: https://algonode.cloud/
+* Docs: https://algonode.io/
+* Privacy: https://algonode.io/privacy-policy/
+
+= Hedera Mirror Node (HBAR) =
+
+* Purpose: Detect HBAR payments.
+* Data: Hedera account IDs and crypto transfer records.
+* When: Automatic verification for HBAR.
+* Site: https://docs.hedera.com/
+* Mirror node: https://mainnet-public.mirrornode.hedera.com/
+* Terms: https://hedera.com/terms
+* Privacy: https://hedera.com/privacy
+
+= NearBlocks (NEAR) =
+
+* Purpose: Detect NEAR payments.
+* Data: NEAR account IDs and transaction lists.
+* When: Automatic verification for NEAR.
+* Site: https://nearblocks.io/
+* API: https://api.nearblocks.io/
+* Privacy: https://nearblocks.io/privacy
+
+= PublicNode Cosmos REST (ATOM) =
+
+* Purpose: Detect Cosmos Hub (ATOM) payments.
+* Data: Cosmos addresses and transaction queries.
+* When: Automatic verification for ATOM.
+* Site: https://publicnode.com/
+* Endpoint used: https://cosmos-rest.publicnode.com/
+* Terms: https://publicnode.com/terms
+* Privacy: https://publicnode.com/privacy
+
+= MultiversX API (EGLD) =
+
+* Purpose: Detect MultiversX (EGLD) payments.
+* Data: Account addresses and successful transactions.
+* When: Automatic verification for EGLD.
+* Site: https://multiversx.com/
+* API: https://api.multiversx.com/
+* Terms: https://multiversx.com/legal/terms-of-use
+* Privacy: https://multiversx.com/legal/privacy-policy
+
+= Filfox (Filecoin) =
+
+* Purpose: Detect FIL payments.
+* Data: Filecoin addresses and message/transaction lists.
+* When: Automatic verification for FIL.
+* Site: https://filfox.info/
+* Privacy / about: https://filfox.info/en
+
+= Greymass EOS history (EOS) =
+
+* Purpose: Detect EOS token transfers.
+* Data: EOS account names and transfer history.
+* When: Automatic verification for EOS.
+* Site: https://greymass.com/
+* Endpoint used: https://eos.greymass.com/
+* Privacy: https://greymass.com/en/privacy
+
+= Subscan (Polkadot) =
+
+* Purpose: Detect DOT transfers.
+* Data: Addresses / transfers; optional API key.
+* When: Automatic verification for DOT.
+* Site: https://www.subscan.io/
+* Terms: https://www.subscan.io/privacy
+* Docs: https://support.subscan.io/
+
+= ViewBlock (Zilliqa) =
+
+* Purpose: Detect ZIL payments.
+* Data: Addresses / transactions; optional API key.
+* When: Automatic verification for ZIL.
+* Site: https://viewblock.io/
+* Terms: https://viewblock.io/terms
+* Privacy: https://viewblock.io/privacy
 
 Suggested privacy policy text is also added under **Settings → Privacy** when the plugin is active.
 
@@ -164,6 +254,12 @@ Suggested privacy policy text is also added under **Settings → Privacy** when 
 * QR Code generator (`assets/js/qrcode.min.js`) — MIT-licensed library by davidshimjs (https://github.com/davidshimjs/qrcodejs). Source is publicly available; the bundled file is minified for production use.
 
 == Changelog ==
+
+= 1.4.5 =
+* Renamed to Xorro Direct Wallet Payments for WooCommerce (distinctive slug/text domain for wordpress.org)
+* Enqueue CSS/JS via WordPress APIs only (removed raw admin <link>/<style> and payment-page <script>)
+* Removed load_plugin_textdomain() (WP.org loads translations automatically)
+* Expanded External services documentation with per-service purpose, data, terms, and privacy links
 
 = 1.4.4 =
 * Expanded auto-verify catalog: BCH, ETH on Arbitrum/Optimism/Base, USDT/USDC/DAI on Polygon/Avalanche/Base (+ USDC TRON), and major ERC-20s (WBTC, AAVE, MKR, LDO, CRV, COMP, APE, SHIB, PEPE, …)
@@ -247,6 +343,9 @@ Suggested privacy policy text is also added under **Settings → Privacy** when 
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.4.5 =
+wordpress.org compliance: new distinctive name/slug, proper asset enqueue, fuller external-service disclosure. Request slug xorro-direct-wallet-payments-woocommerce when uploading.
 
 = 1.4.4 =
 Adds major auto-verifiable coins/tokens (BCH, Base, more stables/ERC-20s) and CashAddr matching fixes. Enable new assets under Coins, then add wallets.

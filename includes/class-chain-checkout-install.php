@@ -24,7 +24,7 @@ class Chain_Checkout_Install {
 			static function ( $schedules ) {
 				$schedules['chain_checkout_every_minute'] = array(
 					'interval' => 60,
-					'display'  => __( 'Every Minute (Chain Checkout)', 'chain-checkout' ),
+					'display'  => __( 'Every Minute (Xorro Wallet Payments)', 'xorro-direct-wallet-payments-woocommerce' ),
 				);
 				return $schedules;
 			}
@@ -76,8 +76,8 @@ class Chain_Checkout_Install {
 			'wallets'                => array(),
 			'price_coin_show'        => 'no',
 			'price_coin_ticker'      => 'BTC',
-			'title'                  => __( 'Pay with Cryptocurrency', 'chain-checkout' ),
-			'description'            => __( 'Pay directly to our wallet with cryptocurrency. No third-party processor.', 'chain-checkout' ),
+			'title'                  => __( 'Pay with Cryptocurrency', 'xorro-direct-wallet-payments-woocommerce' ),
+			'description'            => __( 'Pay directly to our wallet with cryptocurrency. No third-party processor.', 'xorro-direct-wallet-payments-woocommerce' ),
 			'checkout_display'       => 'both',
 			'checkout_icon_id'       => 0,
 			'checkout_icon_width'    => 32,

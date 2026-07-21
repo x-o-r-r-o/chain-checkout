@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 /**
- * Offline smoke tests for Chain Checkout (no WordPress bootstrap required).
+ * Offline smoke tests for Xorro Wallet Payments (no WordPress bootstrap required).
  *
  * Run: php tests/smoke-test.php
  *
@@ -145,7 +145,7 @@ chain_checkout_assert( false !== strpos( $ajax, 'chain_checkout_status_' ), 'aja
 
 // --- Headers ---
 $main = file_get_contents( $root . '/chain-checkout.php' );
-chain_checkout_assert( false !== strpos( $main, 'Version:           1.4.4' ), 'plugin version 1.4.4' );
+chain_checkout_assert( false !== strpos( $main, 'Version:           1.4.5' ), 'plugin version 1.4.5' );
 chain_checkout_assert( false !== strpos( $main, 'Author:            xorro' ), 'author is xorro' );
 chain_checkout_assert( false !== strpos( $main, 'Author URI:        https://github.com/x-o-r-r-o' ), 'author URI is GitHub' );
 chain_checkout_assert( false === strpos( $main, 'Author URI:        https://wordpress.org/plugins/chain-checkout' ), 'author URI not same as plugin URI' );
@@ -204,15 +204,31 @@ chain_checkout_assert( false !== strpos( $readme_md, 'Checkout branding' ), 'REA
 
 $readme = file_get_contents( $root . '/readme.txt' );
 chain_checkout_assert( false !== strpos( $readme, 'Tested up to: 7.0' ), 'readme Tested up to WP 7.0' );
-chain_checkout_assert( false !== strpos( $readme, 'Stable tag: 1.4.4' ), 'readme stable 1.4.4' );
+chain_checkout_assert( false !== strpos( $readme, 'Stable tag: 1.4.5' ), 'readme stable 1.4.5' );
 
 $readme = file_get_contents( $root . '/readme.txt' );
 chain_checkout_assert( false !== strpos( $readme, '== External services ==' ), 'readme external services section' );
-chain_checkout_assert( false !== strpos( $readme, '1.4.4' ), 'readme 1.4.4 changelog' );
+chain_checkout_assert( false !== strpos( $readme, '1.4.4' ), 'readme 1.4.5 changelog' );
 $privacy = file_get_contents( $root . '/includes/class-chain-checkout-privacy.php' );
 chain_checkout_assert( false !== strpos( $privacy, 'wp_add_privacy_policy_content' ), 'privacy policy content registered' );
 chain_checkout_assert( is_file( $root . '/assets/js/qrcode.LICENSE.txt' ), 'qrcode license attribution' );
 chain_checkout_assert( is_file( $root . '/includes/admin/index.php' ), 'admin index.php silence' );
+
+chain_checkout_assert( false !== strpos( $main, 'Xorro Direct Wallet Payments for WooCommerce' ), 'plugin display name distinctive' );
+chain_checkout_assert( false !== strpos( $main, 'Text Domain:       xorro-direct-wallet-payments-woocommerce' ), 'text domain matches slug' );
+chain_checkout_assert( false !== strpos( $main, 'Plugin URI:        https://wordpress.org/plugins/xorro-direct-wallet-payments-woocommerce' ), 'plugin URI uses new slug' );
+chain_checkout_assert( false === strpos( file_get_contents( $root . '/includes/class-chain-checkout.php' ), 'load_plugin_textdomain' ), 'no load_plugin_textdomain' );
+chain_checkout_assert( false === strpos( file_get_contents( $root . '/includes/admin/class-chain-checkout-admin.php' ), "echo '<style" ), 'admin has no raw style echo' );
+chain_checkout_assert( false === strpos( file_get_contents( $root . '/includes/admin/class-chain-checkout-admin.php' ), '<link rel="stylesheet"' ), 'admin has no raw stylesheet link' );
+chain_checkout_assert( false === strpos( file_get_contents( $root . '/includes/class-chain-checkout-gateway.php' ), "echo '<style" ), 'gateway has no raw style echo' );
+chain_checkout_assert( false === strpos( $payment_tpl, '<script>' ), 'payment template has no inline script' );
+chain_checkout_assert( false !== strpos( $readme, '== External services ==' ), 'readme external services section present' );
+chain_checkout_assert( false !== strpos( $readme, 'XRPSCan' ), 'readme documents XRPSCan' );
+chain_checkout_assert( false !== strpos( $readme, 'Subscan' ), 'readme documents Subscan' );
+chain_checkout_assert( false !== strpos( $readme, 'Filfox' ), 'readme documents Filfox' );
+chain_checkout_assert( false !== strpos( $readme, 'AlgoNode' ), 'readme documents AlgoNode' );
+chain_checkout_assert( false !== strpos( $readme, 'Greymass' ), 'readme documents Greymass' );
+
 
 echo "\n";
 if ( $fail > 0 ) {

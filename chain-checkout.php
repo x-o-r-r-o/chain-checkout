@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name:       Chain Checkout
- * Plugin URI:        https://wordpress.org/plugins/chain-checkout
+ * Plugin Name:       Xorro Direct Wallet Payments for WooCommerce
+ * Plugin URI:        https://wordpress.org/plugins/xorro-direct-wallet-payments-woocommerce
  * Description:       Accept cryptocurrency payments directly to your own wallets — no third-party payment processor. Supports BTC, BCH, ETH, USDT, USDC, DAI and 70+ coins/tokens with automatic on-chain verification.
- * Version:           1.4.4
+ * Version:           1.4.5
  * Requires at least: 6.9
  * Requires PHP:      7.4
  * Requires Plugins:  woocommerce
@@ -11,7 +11,7 @@
  * Author URI:        https://github.com/x-o-r-r-o
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       chain-checkout
+ * Text Domain:       xorro-direct-wallet-payments-woocommerce
  * Domain Path:       /languages
  * WC requires at least: 10.0
  * WC tested up to:   10.8
@@ -21,7 +21,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CHAIN_CHECKOUT_VERSION', '1.4.4' );
+define( 'CHAIN_CHECKOUT_VERSION', '1.4.5' );
 define( 'CHAIN_CHECKOUT_FILE', __FILE__ );
 define( 'CHAIN_CHECKOUT_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CHAIN_CHECKOUT_URL', plugin_dir_url( __FILE__ ) );
@@ -56,7 +56,7 @@ register_activation_hook(
 				esc_html(
 					sprintf(
 						/* translators: 1: required PHP 2: current PHP */
-						__( 'Chain Checkout requires PHP %1$s or higher. You are running %2$s.', 'chain-checkout' ),
+						__( 'Xorro Wallet Payments requires PHP %1$s or higher. You are running %2$s.', 'xorro-direct-wallet-payments-woocommerce' ),
 						CHAIN_CHECKOUT_MIN_PHP,
 						PHP_VERSION
 					)
@@ -94,7 +94,7 @@ add_action(
 						return;
 					}
 					echo '<div class="notice notice-error"><p>';
-					echo esc_html__( 'Chain Checkout requires WooCommerce to be installed and active.', 'chain-checkout' );
+					echo esc_html__( 'Xorro Wallet Payments requires WooCommerce to be installed and active.', 'xorro-direct-wallet-payments-woocommerce' );
 					echo '</p></div>';
 				}
 			);
@@ -113,7 +113,7 @@ add_action(
 					echo esc_html(
 						sprintf(
 							/* translators: %s: WordPress version */
-							__( 'Chain Checkout requires WordPress %s or higher (WordPress 7.0 recommended).', 'chain-checkout' ),
+							__( 'Xorro Wallet Payments requires WordPress %s or higher (WordPress 7.0 recommended).', 'xorro-direct-wallet-payments-woocommerce' ),
 							CHAIN_CHECKOUT_MIN_WP
 						)
 					);
@@ -134,7 +134,7 @@ add_action(
 					echo esc_html(
 						sprintf(
 							/* translators: %s: WooCommerce version */
-							__( 'Chain Checkout requires WooCommerce %s or higher.', 'chain-checkout' ),
+							__( 'Xorro Wallet Payments requires WooCommerce %s or higher.', 'xorro-direct-wallet-payments-woocommerce' ),
 							CHAIN_CHECKOUT_MIN_WC
 						)
 					);

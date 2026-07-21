@@ -63,7 +63,7 @@ class Chain_Checkout_Order {
 			'on-hold',
 			sprintf(
 				/* translators: 1: amount 2: coin 3: address */
-				__( 'Awaiting crypto payment of %1$s %2$s to %3$s.', 'chain-checkout' ),
+				__( 'Awaiting crypto payment of %1$s %2$s to %3$s.', 'xorro-direct-wallet-payments-woocommerce' ),
 				$amount,
 				$coin['symbol'],
 				$address
@@ -133,11 +133,11 @@ class Chain_Checkout_Order {
 			$target = Chain_Checkout_Settings::get( 'order_status', 'processing' );
 
 			if ( 'completed' === $target && 'completed' !== $order->get_status() ) {
-				$order->update_status( 'completed', __( 'Crypto payment confirmed on-chain.', 'chain-checkout' ) );
+				$order->update_status( 'completed', __( 'Crypto payment confirmed on-chain.', 'xorro-direct-wallet-payments-woocommerce' ) );
 			} elseif ( 'on-hold' === $target ) {
-				$order->update_status( 'on-hold', __( 'Crypto payment confirmed on-chain (held).', 'chain-checkout' ) );
+				$order->update_status( 'on-hold', __( 'Crypto payment confirmed on-chain (held).', 'xorro-direct-wallet-payments-woocommerce' ) );
 			} else {
-				$order->add_order_note( __( 'Crypto payment confirmed on-chain.', 'chain-checkout' ) );
+				$order->add_order_note( __( 'Crypto payment confirmed on-chain.', 'xorro-direct-wallet-payments-woocommerce' ) );
 			}
 		} finally {
 			delete_option( $lock_key );
@@ -177,7 +177,7 @@ class Chain_Checkout_Order {
 		$order->save();
 		$order->update_status(
 			'failed',
-			__( 'Crypto payment window expired. Contact the store if you already sent funds.', 'chain-checkout' )
+			__( 'Crypto payment window expired. Contact the store if you already sent funds.', 'xorro-direct-wallet-payments-woocommerce' )
 		);
 	}
 
@@ -231,7 +231,7 @@ class Chain_Checkout_Order {
 		$status  = $order->get_meta( '_chain_checkout_status' );
 
 		if ( ! $coin || ! $address || ! $amount ) {
-			echo '<p class="chain-checkout-error">' . esc_html__( 'Payment details are unavailable for this order.', 'chain-checkout' ) . '</p>';
+			echo '<p class="chain-checkout-error">' . esc_html__( 'Payment details are unavailable for this order.', 'xorro-direct-wallet-payments-woocommerce' ) . '</p>';
 			return;
 		}
 
@@ -295,12 +295,12 @@ class Chain_Checkout_Order {
 				'amount'    => $amount,
 				'status'    => $status,
 				'i18n'      => array(
-					'copied'   => __( 'Copied!', 'chain-checkout' ),
-					'expired'  => __( 'Payment window expired.', 'chain-checkout' ),
-					'paid'     => __( 'Payment confirmed! Thank you.', 'chain-checkout' ),
-					'checking' => __( 'Checking…', 'chain-checkout' ),
-					'waiting'  => __( 'Waiting for payment…', 'chain-checkout' ),
-					'qrFail'   => __( 'QR unavailable — copy the address manually.', 'chain-checkout' ),
+					'copied'   => __( 'Copied!', 'xorro-direct-wallet-payments-woocommerce' ),
+					'expired'  => __( 'Payment window expired.', 'xorro-direct-wallet-payments-woocommerce' ),
+					'paid'     => __( 'Payment confirmed! Thank you.', 'xorro-direct-wallet-payments-woocommerce' ),
+					'checking' => __( 'Checking…', 'xorro-direct-wallet-payments-woocommerce' ),
+					'waiting'  => __( 'Waiting for payment…', 'xorro-direct-wallet-payments-woocommerce' ),
+					'qrFail'   => __( 'QR unavailable — copy the address manually.', 'xorro-direct-wallet-payments-woocommerce' ),
 				),
 			)
 		);
@@ -327,7 +327,7 @@ class Chain_Checkout_Order {
 
 		add_meta_box(
 			'chain_checkout_order',
-			__( 'Chain Checkout', 'chain-checkout' ),
+			__( 'Xorro Wallet Payments', 'xorro-direct-wallet-payments-woocommerce' ),
 			array( __CLASS__, 'render_metabox' ),
 			$screen,
 			'side',
@@ -343,16 +343,16 @@ class Chain_Checkout_Order {
 	public static function render_metabox( $post_or_order ) {
 		$order = ( $post_or_order instanceof WC_Order ) ? $post_or_order : wc_get_order( $post_or_order->ID );
 		if ( ! $order || $order->get_payment_method() !== CHAIN_CHECKOUT_GATEWAY_ID ) {
-			echo '<p>' . esc_html__( 'Not a Chain Checkout order.', 'chain-checkout' ) . '</p>';
+			echo '<p>' . esc_html__( 'Not a Xorro Wallet Payments order.', 'xorro-direct-wallet-payments-woocommerce' ) . '</p>';
 			return;
 		}
 
 		$coin_id = $order->get_meta( '_chain_checkout_coin' );
 		$coin    = Chain_Checkout_Coins::get( $coin_id );
-		echo '<p><strong>' . esc_html__( 'Coin:', 'chain-checkout' ) . '</strong> ' . esc_html( $coin ? $coin['name'] : $coin_id ) . '</p>';
-		echo '<p><strong>' . esc_html__( 'Amount:', 'chain-checkout' ) . '</strong> ' . esc_html( $order->get_meta( '_chain_checkout_amount' ) ) . '</p>';
-		echo '<p><strong>' . esc_html__( 'Address:', 'chain-checkout' ) . '</strong><br><code style="word-break:break-all;">' . esc_html( $order->get_meta( '_chain_checkout_address' ) ) . '</code></p>';
-		echo '<p><strong>' . esc_html__( 'Status:', 'chain-checkout' ) . '</strong> ' . esc_html( $order->get_meta( '_chain_checkout_status' ) ) . '</p>';
+		echo '<p><strong>' . esc_html__( 'Coin:', 'xorro-direct-wallet-payments-woocommerce' ) . '</strong> ' . esc_html( $coin ? $coin['name'] : $coin_id ) . '</p>';
+		echo '<p><strong>' . esc_html__( 'Amount:', 'xorro-direct-wallet-payments-woocommerce' ) . '</strong> ' . esc_html( $order->get_meta( '_chain_checkout_amount' ) ) . '</p>';
+		echo '<p><strong>' . esc_html__( 'Address:', 'xorro-direct-wallet-payments-woocommerce' ) . '</strong><br><code style="word-break:break-all;">' . esc_html( $order->get_meta( '_chain_checkout_address' ) ) . '</code></p>';
+		echo '<p><strong>' . esc_html__( 'Status:', 'xorro-direct-wallet-payments-woocommerce' ) . '</strong> ' . esc_html( $order->get_meta( '_chain_checkout_status' ) ) . '</p>';
 
 		if ( 'awaiting' === $order->get_meta( '_chain_checkout_status' ) && current_user_can( 'manage_woocommerce' ) ) {
 			?>
@@ -360,9 +360,9 @@ class Chain_Checkout_Order {
 				<input type="hidden" name="action" value="chain_checkout_mark_paid" />
 				<input type="hidden" name="order_id" value="<?php echo esc_attr( (string) $order->get_id() ); ?>" />
 				<?php wp_nonce_field( 'chain_checkout_mark_paid_' . $order->get_id() ); ?>
-				<p><button type="submit" class="button button-primary"><?php esc_html_e( 'Mark payment received', 'chain-checkout' ); ?></button></p>
+				<p><button type="submit" class="button button-primary"><?php esc_html_e( 'Mark payment received', 'xorro-direct-wallet-payments-woocommerce' ); ?></button></p>
 			</form>
-			<p class="description"><?php esc_html_e( 'Use for chains without auto-verify, or if detection is delayed.', 'chain-checkout' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Use for chains without auto-verify, or if detection is delayed.', 'xorro-direct-wallet-payments-woocommerce' ); ?></p>
 			<?php
 		}
 	}
@@ -372,11 +372,11 @@ class Chain_Checkout_Order {
 	 */
 	public static function handle_mark_paid() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( esc_html__( 'Forbidden.', 'chain-checkout' ) );
+			wp_die( esc_html__( 'Forbidden.', 'xorro-direct-wallet-payments-woocommerce' ) );
 		}
 
 		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || 'POST' !== strtoupper( (string) $_SERVER['REQUEST_METHOD'] ) ) {
-			wp_die( esc_html__( 'Invalid request method.', 'chain-checkout' ), 405 );
+			wp_die( esc_html__( 'Invalid request method.', 'xorro-direct-wallet-payments-woocommerce' ), 405 );
 		}
 
 		$order_id = isset( $_POST['order_id'] ) ? absint( $_POST['order_id'] ) : 0;
@@ -385,7 +385,7 @@ class Chain_Checkout_Order {
 		$order = wc_get_order( $order_id );
 		if ( $order && $order->get_payment_method() === CHAIN_CHECKOUT_GATEWAY_ID ) {
 			self::mark_paid( $order );
-			$order->add_order_note( __( 'Payment marked as received manually by admin.', 'chain-checkout' ) );
+			$order->add_order_note( __( 'Payment marked as received manually by admin.', 'xorro-direct-wallet-payments-woocommerce' ) );
 		}
 
 		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url( 'edit.php?post_type=shop_order' ) );
@@ -436,6 +436,6 @@ class Chain_Checkout_Order {
 		if ( $order->get_payment_method() !== CHAIN_CHECKOUT_GATEWAY_ID ) {
 			return;
 		}
-		echo '<p><strong>' . esc_html__( 'Chain Checkout', 'chain-checkout' ) . ':</strong> ' . esc_html( $order->get_meta( '_chain_checkout_coin' ) ) . ' / ' . esc_html( $order->get_meta( '_chain_checkout_amount' ) ) . '</p>';
+		echo '<p><strong>' . esc_html__( 'Xorro Wallet Payments', 'xorro-direct-wallet-payments-woocommerce' ) . ':</strong> ' . esc_html( $order->get_meta( '_chain_checkout_coin' ) ) . ' / ' . esc_html( $order->get_meta( '_chain_checkout_amount' ) ) . '</p>';
 	}
 }

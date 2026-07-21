@@ -304,7 +304,7 @@ class Chain_Checkout_Verifier {
 	}
 
 	/**
-	 * Check if a txid is already claimed by another Chain Checkout order.
+	 * Check if a txid is already claimed by another Xorro Wallet Payments order.
 	 *
 	 * @param string $txid          Transaction id.
 	 * @param int    $exclude_order Order to exclude.

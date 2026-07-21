@@ -78,7 +78,7 @@ class Chain_Checkout_Ajax {
 	 */
 	public static function register_admin_assets( $hook ) {
 		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$is_plugin_page = ( 0 === strpos( $page, 'chain-checkout' ) ) || ( false !== strpos( (string) $hook, 'chain-checkout' ) );
+		$is_plugin_page = ( 0 === strpos( $page, 'xorro-direct-wallet-payments-woocommerce' ) ) || ( false !== strpos( (string) $hook, 'xorro-direct-wallet-payments-woocommerce' ) );
 
 		if ( ! $is_plugin_page && 'woocommerce_page_wc-settings' !== $hook ) {
 			return;
@@ -114,20 +114,20 @@ class Chain_Checkout_Ajax {
 			'chain-checkout-admin',
 			'chainCheckoutAdmin',
 			array(
-				'placeholder'         => __( 'Paste wallet address', 'chain-checkout' ),
-				'copy'                => __( 'Copy', 'chain-checkout' ),
-				'copied'              => __( 'Copied', 'chain-checkout' ),
-				'remove'              => __( 'Remove address', 'chain-checkout' ),
-				'invalidFormat'       => __( 'Invalid format', 'chain-checkout' ),
-				'duplicate'           => __( 'Duplicate address', 'chain-checkout' ),
+				'placeholder'         => __( 'Paste wallet address', 'xorro-direct-wallet-payments-woocommerce' ),
+				'copy'                => __( 'Copy', 'xorro-direct-wallet-payments-woocommerce' ),
+				'copied'              => __( 'Copied', 'xorro-direct-wallet-payments-woocommerce' ),
+				'remove'              => __( 'Remove address', 'xorro-direct-wallet-payments-woocommerce' ),
+				'invalidFormat'       => __( 'Invalid format', 'xorro-direct-wallet-payments-woocommerce' ),
+				'duplicate'           => __( 'Duplicate address', 'xorro-direct-wallet-payments-woocommerce' ),
 				/* translators: %d: number of wallet addresses */
-				'addressesConfigured' => __( '%d addresses', 'chain-checkout' ),
+				'addressesConfigured' => __( '%d addresses', 'xorro-direct-wallet-payments-woocommerce' ),
 				/* translators: %d: coins still missing a wallet */
-				'missingWallets'      => __( '%d coin(s) still need an address', 'chain-checkout' ),
+				'missingWallets'      => __( '%d coin(s) still need an address', 'xorro-direct-wallet-payments-woocommerce' ),
 				'defaultIcon'         => Chain_Checkout_Branding::default_icon_url(),
-				'mediaTitle'          => __( 'Select checkout icon', 'chain-checkout' ),
-				'mediaButton'         => __( 'Use this icon', 'chain-checkout' ),
-				'mediaUnavailable'    => __( 'Media library is not available.', 'chain-checkout' ),
+				'mediaTitle'          => __( 'Select checkout icon', 'xorro-direct-wallet-payments-woocommerce' ),
+				'mediaButton'         => __( 'Use this icon', 'xorro-direct-wallet-payments-woocommerce' ),
+				'mediaUnavailable'    => __( 'Media library is not available.', 'xorro-direct-wallet-payments-woocommerce' ),
 			)
 		);
 	}
@@ -138,7 +138,7 @@ class Chain_Checkout_Ajax {
 	public static function payment_status() {
 		$order_id = isset( $_POST['order_id'] ) ? absint( $_POST['order_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$deny     = static function () {
-			wp_send_json_error( array( 'message' => __( 'Forbidden.', 'chain-checkout' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Forbidden.', 'xorro-direct-wallet-payments-woocommerce' ) ), 403 );
 		};
 
 		if ( ! $order_id ) {
@@ -151,13 +151,13 @@ class Chain_Checkout_Ajax {
 		$rate_key = 'chain_checkout_status_' . md5( $ip . '|' . $order_id );
 		$count    = (int) get_transient( $rate_key );
 		if ( $count > 120 ) {
-			wp_send_json_error( array( 'message' => __( 'Too many requests. Please wait a moment.', 'chain-checkout' ) ), 429 );
+			wp_send_json_error( array( 'message' => __( 'Too many requests. Please wait a moment.', 'xorro-direct-wallet-payments-woocommerce' ) ), 429 );
 		}
 		set_transient( $rate_key, $count + 1, MINUTE_IN_SECONDS );
 
 		$order = wc_get_order( $order_id );
 
-		// Uniform denial — avoid leaking whether an order ID is a Chain Checkout order.
+		// Uniform denial — avoid leaking whether an order ID is a Xorro Wallet Payments order.
 		if ( ! $order || $order->get_payment_method() !== CHAIN_CHECKOUT_GATEWAY_ID ) {
 			$deny();
 		}
@@ -215,7 +215,7 @@ class Chain_Checkout_Ajax {
 		$rate_key = 'chain_checkout_quote_' . md5( $ip );
 		$count    = (int) get_transient( $rate_key );
 		if ( $count > 60 ) {
-			wp_send_json_error( array( 'message' => __( 'Too many requests. Please wait a moment.', 'chain-checkout' ) ), 429 );
+			wp_send_json_error( array( 'message' => __( 'Too many requests. Please wait a moment.', 'xorro-direct-wallet-payments-woocommerce' ) ), 429 );
 		}
 		set_transient( $rate_key, $count + 1, MINUTE_IN_SECONDS );
 
@@ -224,18 +224,18 @@ class Chain_Checkout_Ajax {
 		$payable = Chain_Checkout_Coins::get_payable();
 
 		if ( ! $coin || ! isset( $payable[ $coin_id ] ) ) {
-			wp_send_json_error( array( 'message' => __( 'Coin not available.', 'chain-checkout' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Coin not available.', 'xorro-direct-wallet-payments-woocommerce' ) ), 400 );
 		}
 
 		if ( ! WC()->cart ) {
-			wp_send_json_error( array( 'message' => __( 'Cart unavailable.', 'chain-checkout' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Cart unavailable.', 'xorro-direct-wallet-payments-woocommerce' ) ), 400 );
 		}
 
 		$total  = (float) WC()->cart->get_total( 'edit' );
 		$amount = Chain_Checkout_Prices::fiat_to_crypto( $total, $coin_id );
 
 		if ( '' === $amount ) {
-			wp_send_json_error( array( 'message' => __( 'Unable to fetch exchange rate. Try again shortly.', 'chain-checkout' ) ), 503 );
+			wp_send_json_error( array( 'message' => __( 'Unable to fetch exchange rate. Try again shortly.', 'xorro-direct-wallet-payments-woocommerce' ) ), 503 );
 		}
 
 		wp_send_json_success(

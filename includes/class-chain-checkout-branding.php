@@ -24,9 +24,9 @@ class Chain_Checkout_Branding {
 	 */
 	public static function display_modes() {
 		return array(
-			'both' => __( 'Icon and text', 'chain-checkout' ),
-			'icon' => __( 'Icon only', 'chain-checkout' ),
-			'text' => __( 'Text only', 'chain-checkout' ),
+			'both' => __( 'Icon and text', 'xorro-direct-wallet-payments-woocommerce' ),
+			'icon' => __( 'Icon only', 'xorro-direct-wallet-payments-woocommerce' ),
+			'text' => __( 'Text only', 'xorro-direct-wallet-payments-woocommerce' ),
 		);
 	}
 
@@ -47,9 +47,9 @@ class Chain_Checkout_Branding {
 	 * @return string
 	 */
 	public static function title() {
-		$title = Chain_Checkout_Settings::get( 'title', __( 'Pay with Cryptocurrency', 'chain-checkout' ) );
+		$title = Chain_Checkout_Settings::get( 'title', __( 'Pay with Cryptocurrency', 'xorro-direct-wallet-payments-woocommerce' ) );
 		$title = is_string( $title ) ? trim( $title ) : '';
-		return '' !== $title ? $title : __( 'Pay with Cryptocurrency', 'chain-checkout' );
+		return '' !== $title ? $title : __( 'Pay with Cryptocurrency', 'xorro-direct-wallet-payments-woocommerce' );
 	}
 
 	/**

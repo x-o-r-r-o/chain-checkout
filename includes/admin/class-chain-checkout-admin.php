@@ -19,7 +19,6 @@ class Chain_Checkout_Admin {
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
 		add_action( 'admin_init', array( __CLASS__, 'handle_save' ) );
 		add_action( 'admin_notices', array( __CLASS__, 'setup_notice' ) );
-		add_action( 'admin_head', array( __CLASS__, 'print_admin_assets' ) );
 		add_filter( 'admin_body_class', array( __CLASS__, 'admin_body_class' ) );
 		add_filter( 'plugin_action_links_' . CHAIN_CHECKOUT_BASENAME, array( __CLASS__, 'action_links' ) );
 	}
@@ -38,43 +37,13 @@ class Chain_Checkout_Admin {
 	}
 
 	/**
-	 * Whether the current admin request is a Chain Checkout settings screen.
+	 * Whether the current admin request is a Xorro Wallet Payments settings screen.
 	 *
 	 * @return bool
 	 */
 	private static function is_plugin_screen() {
 		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		return ( '' !== $page && 0 === strpos( $page, 'chain-checkout' ) );
-	}
-
-	/**
-	 * Force admin CSS/JS onto plugin screens (survives late/missed enqueue).
-	 */
-	public static function print_admin_assets() {
-		if ( ! self::is_plugin_screen() || ! current_user_can( 'manage_woocommerce' ) ) {
-			return;
-		}
-
-		$css_path = CHAIN_CHECKOUT_PATH . 'assets/css/admin.css';
-		$css_url  = CHAIN_CHECKOUT_URL . 'assets/css/admin.css';
-		$ver      = CHAIN_CHECKOUT_VERSION;
-		if ( is_readable( $css_path ) ) {
-			$ver = CHAIN_CHECKOUT_VERSION . '.' . (string) filemtime( $css_path );
-		}
-
-		printf(
-			'<link rel="stylesheet" id="chain-checkout-admin-css" href="%s" media="all" />' . "\n",
-			esc_url( add_query_arg( 'ver', $ver, $css_url ) )
-		);
-
-		// Inline the stylesheet so admin UI cannot render unstyled if the file request fails.
-		if ( is_readable( $css_path ) ) {
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local plugin CSS.
-			$css = file_get_contents( $css_path );
-			if ( is_string( $css ) && '' !== $css ) {
-				echo '<style id="chain-checkout-admin-inline">' . $css . '</style>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted local CSS file.
-			}
-		}
+		return ( '' !== $page && 0 === strpos( $page, 'xorro-direct-wallet-payments-woocommerce' ) );
 	}
 
 	/**
@@ -87,7 +56,7 @@ class Chain_Checkout_Admin {
 		$url = admin_url( 'admin.php?page=chain-checkout' );
 		array_unshift(
 			$links,
-			'<a href="' . esc_url( $url ) . '">' . esc_html__( 'Settings', 'chain-checkout' ) . '</a>'
+			'<a href="' . esc_url( $url ) . '">' . esc_html__( 'Settings', 'xorro-direct-wallet-payments-woocommerce' ) . '</a>'
 		);
 		return $links;
 	}
@@ -97,46 +66,46 @@ class Chain_Checkout_Admin {
 	 */
 	public static function register_menu() {
 		add_menu_page(
-			__( 'Chain Checkout', 'chain-checkout' ),
-			__( 'Chain Checkout', 'chain-checkout' ),
+			__( 'Xorro Wallet Payments', 'xorro-direct-wallet-payments-woocommerce' ),
+			__( 'Xorro Wallet Payments', 'xorro-direct-wallet-payments-woocommerce' ),
 			'manage_woocommerce',
-			'chain-checkout',
+			'xorro-direct-wallet-payments-woocommerce',
 			array( __CLASS__, 'render_page' ),
 			'dashicons-money-alt',
 			56
 		);
 
 		add_submenu_page(
-			'chain-checkout',
-			__( 'General', 'chain-checkout' ),
-			__( 'General', 'chain-checkout' ),
+			'xorro-direct-wallet-payments-woocommerce',
+			__( 'General', 'xorro-direct-wallet-payments-woocommerce' ),
+			__( 'General', 'xorro-direct-wallet-payments-woocommerce' ),
 			'manage_woocommerce',
-			'chain-checkout',
+			'xorro-direct-wallet-payments-woocommerce',
 			array( __CLASS__, 'render_page' )
 		);
 
 		add_submenu_page(
-			'chain-checkout',
-			__( 'Coins', 'chain-checkout' ),
-			__( 'Coins', 'chain-checkout' ),
+			'xorro-direct-wallet-payments-woocommerce',
+			__( 'Coins', 'xorro-direct-wallet-payments-woocommerce' ),
+			__( 'Coins', 'xorro-direct-wallet-payments-woocommerce' ),
 			'manage_woocommerce',
 			'chain-checkout-coins',
 			array( __CLASS__, 'render_page' )
 		);
 
 		add_submenu_page(
-			'chain-checkout',
-			__( 'Wallets', 'chain-checkout' ),
-			__( 'Wallets', 'chain-checkout' ),
+			'xorro-direct-wallet-payments-woocommerce',
+			__( 'Wallets', 'xorro-direct-wallet-payments-woocommerce' ),
+			__( 'Wallets', 'xorro-direct-wallet-payments-woocommerce' ),
 			'manage_woocommerce',
 			'chain-checkout-wallets',
 			array( __CLASS__, 'render_page' )
 		);
 
 		add_submenu_page(
-			'chain-checkout',
-			__( 'Prices & APIs', 'chain-checkout' ),
-			__( 'Prices & APIs', 'chain-checkout' ),
+			'xorro-direct-wallet-payments-woocommerce',
+			__( 'Prices & APIs', 'xorro-direct-wallet-payments-woocommerce' ),
+			__( 'Prices & APIs', 'xorro-direct-wallet-payments-woocommerce' ),
 			'manage_woocommerce',
 			'chain-checkout-prices',
 			array( __CLASS__, 'render_page' )
@@ -149,9 +118,9 @@ class Chain_Checkout_Admin {
 	 * @return string
 	 */
 	private static function current_tab() {
-		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : 'chain-checkout'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : 'xorro-direct-wallet-payments-woocommerce'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$map  = array(
-			'chain-checkout'         => 'general',
+			'xorro-direct-wallet-payments-woocommerce'         => 'general',
 			'chain-checkout-coins'   => 'coins',
 			'chain-checkout-wallets' => 'wallets',
 			'chain-checkout-prices'  => 'prices',
@@ -215,7 +184,7 @@ class Chain_Checkout_Admin {
 		add_settings_error(
 			'chain_checkout',
 			'chain_checkout_saved',
-			__( 'Settings saved.', 'chain-checkout' ),
+			__( 'Settings saved.', 'xorro-direct-wallet-payments-woocommerce' ),
 			'success'
 		);
 	}
@@ -228,7 +197,7 @@ class Chain_Checkout_Admin {
 			return;
 		}
 		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-		if ( ! $screen || false === strpos( (string) $screen->id, 'chain-checkout' ) ) {
+		if ( ! $screen || false === strpos( (string) $screen->id, 'xorro-direct-wallet-payments-woocommerce' ) ) {
 			$payable = Chain_Checkout_Coins::get_payable();
 			if ( ! empty( $payable ) ) {
 				return;
@@ -248,8 +217,8 @@ class Chain_Checkout_Admin {
 		echo wp_kses(
 			sprintf(
 				/* translators: %s: settings URL */
-				__( 'Chain Checkout is installed. Enable coins and add wallet addresses in %s to start accepting payments.', 'chain-checkout' ),
-				'<a href="' . esc_url( admin_url( 'admin.php?page=chain-checkout-coins' ) ) . '">' . esc_html__( 'Chain Checkout settings', 'chain-checkout' ) . '</a>'
+				__( 'Xorro Direct Wallet Payments for WooCommerce is installed. Enable coins and add wallet addresses in %s to start accepting payments.', 'xorro-direct-wallet-payments-woocommerce' ),
+				'<a href="' . esc_url( admin_url( 'admin.php?page=chain-checkout-coins' ) ) . '">' . esc_html__( 'Xorro Wallet Payments settings', 'xorro-direct-wallet-payments-woocommerce' ) . '</a>'
 			),
 			array(
 				'a' => array(
@@ -296,9 +265,9 @@ class Chain_Checkout_Admin {
 				'chainCheckoutAdmin',
 				array(
 					'defaultIcon'      => class_exists( 'Chain_Checkout_Branding' ) ? Chain_Checkout_Branding::default_icon_url() : '',
-					'mediaTitle'       => __( 'Select checkout icon', 'chain-checkout' ),
-					'mediaButton'      => __( 'Use this icon', 'chain-checkout' ),
-					'mediaUnavailable' => __( 'Media library is not available.', 'chain-checkout' ),
+					'mediaTitle'       => __( 'Select checkout icon', 'xorro-direct-wallet-payments-woocommerce' ),
+					'mediaButton'      => __( 'Use this icon', 'xorro-direct-wallet-payments-woocommerce' ),
+					'mediaUnavailable' => __( 'Media library is not available.', 'xorro-direct-wallet-payments-woocommerce' ),
 				)
 			);
 		}

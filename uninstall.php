@@ -1,6 +1,6 @@
 <?php
 /**
- * Uninstall Chain Checkout — remove options and transients only.
+ * Uninstall Xorro Wallet Payments — remove options and transients only.
  * Order meta is left intact for accounting history.
  *
  * @package ChainCheckout
