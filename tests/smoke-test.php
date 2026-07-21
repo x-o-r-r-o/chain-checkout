@@ -151,10 +151,11 @@ xdwp_assert( false !== strpos( $ajax, 'xdwp_status_' ), 'ajax order-bound nonce'
 
 // --- Headers ---
 $main = file_get_contents( $root . '/xorro-direct-wallet-payments-woocommerce.php' );
-xdwp_assert( false !== strpos( $main, 'Version:           1.5.6' ), 'plugin version 1.5.6' );
+xdwp_assert( false !== strpos( $main, 'Version:           1.5.7' ), 'plugin version 1.5.7' );
 xdwp_assert( false !== strpos( $main, 'Author:            xorro' ), 'author is xorro' );
-xdwp_assert( false !== strpos( $main, 'Author URI:        https://github.com/x-o-r-r-o/xorro-direct-wallet-payments-woocommerce' ), 'author URI is GitHub repo' );
-xdwp_assert( false === strpos( $main, 'Author URI:        https://wordpress.org/plugins/xdwp' ), 'author URI not same as plugin URI' );
+xdwp_assert( false !== strpos( $main, 'Author URI:        https://github.com/x-o-r-r-o' ), 'author URI is GitHub profile' );
+xdwp_assert( false === strpos( $main, 'Author URI:        https://github.com/x-o-r-r-o/xorro-direct-wallet-payments-woocommerce' ), 'author URI not the plugin repo' );
+xdwp_assert( false === strpos( $main, 'Author URI:        https://wordpress.org/plugins/xdwp' ), 'author URI not same as old plugin URI' );
 xdwp_assert( false !== strpos( $main, 'Requires at least: 6.9' ), 'Requires WP 6.9+' );
 xdwp_assert( false !== strpos( $main, 'WC requires at least: 10.0' ), 'Requires WC 10.0+' );
 xdwp_assert( false !== strpos( $main, 'WC tested up to:   10.8' ), 'WC tested up to 10.8' );
@@ -210,11 +211,11 @@ xdwp_assert( false !== strpos( $readme_md, 'Checkout branding' ), 'README.md bra
 
 $readme = file_get_contents( $root . '/readme.txt' );
 xdwp_assert( false !== strpos( $readme, 'Tested up to: 7.0' ), 'readme Tested up to WP 7.0' );
-xdwp_assert( false !== strpos( $readme, 'Stable tag: 1.5.6' ), 'readme stable 1.5.6' );
+xdwp_assert( false !== strpos( $readme, 'Stable tag: 1.5.7' ), 'readme stable 1.5.7' );
 
 $readme = file_get_contents( $root . '/readme.txt' );
 xdwp_assert( false !== strpos( $readme, '== External services ==' ), 'readme external services section' );
-xdwp_assert( false !== strpos( $readme, '1.5.6' ), 'readme 1.5.6 changelog' );
+xdwp_assert( false !== strpos( $readme, '1.5.7' ), 'readme 1.5.7 changelog' );
 $privacy = file_get_contents( $root . '/includes/class-xdwp-privacy.php' );
 xdwp_assert( false !== strpos( $privacy, 'wp_add_privacy_policy_content' ), 'privacy policy content registered' );
 xdwp_assert( is_file( $root . '/assets/js/qrcode.LICENSE.txt' ), 'qrcode license attribution' );
@@ -224,6 +225,10 @@ xdwp_assert( false !== strpos( $main, 'Xorro Direct Wallet Payments for WooComme
 xdwp_assert( false !== strpos( $main, 'Text Domain:       xorro-direct-wallet-payments-woocommerce' ), 'text domain matches slug' );
 xdwp_assert( false !== strpos( $main, 'Plugin URI:        https://github.com/x-o-r-r-o/xorro-direct-wallet-payments-woocommerce' ), 'plugin URI uses GitHub repo' );
 xdwp_assert( false !== strpos( $main, 'Update URI:        https://github.com/x-o-r-r-o/xorro-direct-wallet-payments-woocommerce' ), 'Update URI points at GitHub' );
+// Plugin URI and Author URI must differ (wordpress.org).
+preg_match( '/^\s*\*\s*Plugin URI:\s*(.+)$/m', $main, $pu );
+preg_match( '/^\s*\*\s*Author URI:\s*(.+)$/m', $main, $au );
+xdwp_assert( ! empty( $pu[1] ) && ! empty( $au[1] ) && trim( $pu[1] ) !== trim( $au[1] ), 'plugin URI differs from author URI' );
 xdwp_assert( is_readable( $root . '/includes/class-xdwp-updater.php' ), 'GitHub updater class present' );
 xdwp_assert( false !== strpos( file_get_contents( $root . '/includes/class-xdwp-updater.php' ), 'update_plugins_github.com' ), 'updater hooks update_plugins_github.com' );
 xdwp_assert( false !== strpos( file_get_contents( $root . '/includes/class-xdwp-updater.php' ), 'releases/latest' ), 'updater fetches GitHub latest release' );

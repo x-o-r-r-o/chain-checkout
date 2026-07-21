@@ -94,6 +94,10 @@ php tests/smoke-test.php
 
 See [readme.txt](readme.txt).
 
+### 1.5.7
+
+- Author URI set to GitHub profile (distinct from Plugin URI) for wordpress.org header validation
+
 ### 1.5.6
 
 - GitHub update ZIP SHA-256 verification + host allowlist; atomic wallet rotation; zero-conf admin warning

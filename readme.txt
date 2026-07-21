@@ -4,7 +4,7 @@ Tags: woocommerce, cryptocurrency, bitcoin, ethereum, payments, usdt, crypto che
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.5.6
+Stable tag: 1.5.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -255,6 +255,9 @@ Suggested privacy policy text is also added under **Settings → Privacy** when 
 
 == Changelog ==
 
+= 1.5.7 =
+* Fixed Plugin URI vs Author URI: Author URI is the GitHub profile; Plugin URI remains the plugin repository (wordpress.org requirement)
+
 = 1.5.6 =
 * Security hardening: GitHub update ZIPs must match release SHA-256 and allowlisted download hosts
 * Atomic wallet rotation index (LAST_INSERT_ID) under concurrent checkouts
@@ -386,6 +389,9 @@ Suggested privacy policy text is also added under **Settings → Privacy** when 
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.5.7 =
+Plugin headers: Author URI now points to the GitHub profile so it differs from Plugin URI (wordpress.org requirement).
 
 = 1.5.6 =
 Hardens GitHub auto-updates with SHA-256 verification and fixes concurrent wallet rotation. Recommended update.
