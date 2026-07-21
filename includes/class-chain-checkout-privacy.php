@@ -41,7 +41,7 @@ class Chain_Checkout_Privacy {
 		$content .= '<li>' . esc_html__( 'CoinGecko — exchange rates for crypto quotes.', 'chain-checkout' ) . '</li>';
 		$content .= '<li>' . esc_html__( 'Etherscan API V2 — EVM chain payment detection.', 'chain-checkout' ) . '</li>';
 		$content .= '<li>' . esc_html__( 'mempool.space / Blockstream — Bitcoin payment detection.', 'chain-checkout' ) . '</li>';
-		$content .= '<li>' . esc_html__( 'Blockchair — Litecoin / Dogecoin payment detection.', 'chain-checkout' ) . '</li>';
+		$content .= '<li>' . esc_html__( 'Blockchair — Bitcoin Cash / Litecoin / Dogecoin payment detection.', 'chain-checkout' ) . '</li>';
 		$content .= '<li>' . esc_html__( 'TronGrid, Solana RPC / Helius, and other public explorers/RPCs for supported networks.', 'chain-checkout' ) . '</li>';
 		$content .= '</ul>';
 

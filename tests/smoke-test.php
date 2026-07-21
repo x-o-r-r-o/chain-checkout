@@ -56,12 +56,14 @@ if ( ! function_exists( 'apply_filters' ) ) {
 require_once $root . '/includes/class-chain-checkout-coins.php';
 
 $all = Chain_Checkout_Coins::all();
-chain_checkout_assert( count( $all ) >= 48, 'coin catalog size >= 48 (got ' . count( $all ) . ')' );
+chain_checkout_assert( count( $all ) >= 75, 'coin catalog size >= 75 (got ' . count( $all ) . ')' );
 
 $required = array(
-	'BTC', 'ETH', 'LTC', 'DOGE', 'ARB', 'OP', 'BNB', 'SOL', 'TRX', 'XMR', 'XRP', 'ATA', 'MATIC', 'TUSD', 'USDP', 'GUSD',
-	'USDT_ETH', 'USDT_ARB', 'USDT_OP', 'USDT_BNB', 'USDT_SOL', 'USDT_TRX',
-	'USDC_ETH', 'USDC_ARB', 'USDC_OP', 'USDC_BNB', 'USDC_SOL',
+	'BTC', 'BCH', 'ETH', 'ETH_ARB', 'ETH_OP', 'ETH_BASE', 'LTC', 'DOGE', 'ARB', 'OP', 'BNB', 'SOL', 'TRX', 'XMR', 'XRP', 'ATA', 'MATIC', 'TUSD', 'USDP', 'GUSD', 'DAI',
+	'USDT_ETH', 'USDT_ARB', 'USDT_OP', 'USDT_BNB', 'USDT_MATIC', 'USDT_AVAX', 'USDT_BASE', 'USDT_SOL', 'USDT_TRX',
+	'USDC_ETH', 'USDC_ARB', 'USDC_OP', 'USDC_BNB', 'USDC_MATIC', 'USDC_AVAX', 'USDC_BASE', 'USDC_SOL', 'USDC_TRX',
+	'DAI_ARB', 'DAI_OP', 'DAI_MATIC', 'DAI_BASE',
+	'WBTC', 'AAVE', 'MKR', 'LDO', 'CRV', 'COMP', 'APE', 'SHIB', 'PEPE', 'AAVE_ARB', 'AAVE_OP',
 	'FTT', 'AVAX', 'LINK', 'DOT', 'CAKE', 'ATOM', 'EOS', 'ETC', 'ZIL', 'FIL', 'ALGO', 'HBAR', 'CRO', 'FTM', 'EGLD', 'NEAR', 'AXS', 'MANA', 'SAND', 'UNI', 'XLM',
 );
 foreach ( $required as $id ) {
@@ -69,9 +71,15 @@ foreach ( $required as $id ) {
 }
 
 chain_checkout_assert( Chain_Checkout_Coins::supports_auto_verify( 'BTC' ), 'BTC auto-verify' );
+chain_checkout_assert( Chain_Checkout_Coins::supports_auto_verify( 'BCH' ), 'BCH auto-verify' );
 chain_checkout_assert( Chain_Checkout_Coins::supports_auto_verify( 'ETH' ), 'ETH auto-verify' );
+chain_checkout_assert( Chain_Checkout_Coins::supports_auto_verify( 'ETH_BASE' ), 'ETH_BASE auto-verify' );
 chain_checkout_assert( Chain_Checkout_Coins::supports_auto_verify( 'BNB' ), 'BNB auto-verify' );
 chain_checkout_assert( Chain_Checkout_Coins::supports_auto_verify( 'USDT_ETH' ), 'USDT_ETH auto-verify' );
+chain_checkout_assert( Chain_Checkout_Coins::supports_auto_verify( 'USDT_BASE' ), 'USDT_BASE auto-verify' );
+chain_checkout_assert( Chain_Checkout_Coins::supports_auto_verify( 'USDC_TRX' ), 'USDC_TRX auto-verify' );
+chain_checkout_assert( Chain_Checkout_Coins::supports_auto_verify( 'DAI' ), 'DAI auto-verify' );
+chain_checkout_assert( Chain_Checkout_Coins::supports_auto_verify( 'WBTC' ), 'WBTC auto-verify' );
 chain_checkout_assert( Chain_Checkout_Coins::supports_auto_verify( 'FTM' ), 'FTM auto-verify' );
 chain_checkout_assert( Chain_Checkout_Coins::supports_auto_verify( 'CRO' ), 'CRO auto-verify' );
 chain_checkout_assert( Chain_Checkout_Coins::supports_auto_verify( 'ETC' ), 'ETC auto-verify' );
@@ -90,10 +98,18 @@ chain_checkout_assert( 0 === strpos( $btc_uri, 'bitcoin:' ), "BTC BIP-21 scheme 
 chain_checkout_assert( false !== strpos( $btc_uri, 'amount=0.01' ), "BTC amount => {$btc_uri}" );
 chain_checkout_assert( false === strpos( $btc_uri, 'btc:' ), 'BTC must not use btc: scheme' );
 
+$bch_uri = Chain_Checkout_Coins::payment_uri( 'BCH', 'bitcoincash:qp3wjpa3tjlj042z2wv7jabukkwz6x8n4y0x8x8x8x', '0.25' );
+chain_checkout_assert( 0 === strpos( $bch_uri, 'bitcoincash:' ), "BCH CashAddr URI => {$bch_uri}" );
+chain_checkout_assert( false !== strpos( $bch_uri, 'amount=0.25' ), "BCH amount => {$bch_uri}" );
+chain_checkout_assert( 1 === substr_count( strtolower( $bch_uri ), 'bitcoincash:' ), 'BCH must not double bitcoincash: scheme' );
+
 $eth_uri = Chain_Checkout_Coins::payment_uri( 'ETH', '0xabcABC0000000000000000000000000000000001', '1.5' );
 chain_checkout_assert( 0 === strpos( $eth_uri, 'ethereum:0xabcabc' ), "ETH EIP-681 => {$eth_uri}" );
 chain_checkout_assert( false !== strpos( $eth_uri, '@1?' ), "ETH chain id 1 => {$eth_uri}" );
 chain_checkout_assert( false !== strpos( $eth_uri, 'value=1500000000000000000' ), "ETH value wei => {$eth_uri}" );
+
+$eth_base = Chain_Checkout_Coins::payment_uri( 'ETH_BASE', '0xabcABC0000000000000000000000000000000001', '0.01' );
+chain_checkout_assert( false !== strpos( $eth_base, '@8453?' ), "ETH_BASE chain id 8453 => {$eth_base}" );
 
 $usdt_bnb = Chain_Checkout_Coins::payment_uri( 'USDT_BNB', '0xabcABC0000000000000000000000000000000001', '10' );
 chain_checkout_assert( false !== strpos( $usdt_bnb, '@56/transfer' ), "USDT_BNB chain 56 => {$usdt_bnb}" );
@@ -129,7 +145,7 @@ chain_checkout_assert( false !== strpos( $ajax, 'chain_checkout_status_' ), 'aja
 
 // --- Headers ---
 $main = file_get_contents( $root . '/chain-checkout.php' );
-chain_checkout_assert( false !== strpos( $main, 'Version:           1.4.3' ), 'plugin version 1.4.3' );
+chain_checkout_assert( false !== strpos( $main, 'Version:           1.4.4' ), 'plugin version 1.4.4' );
 chain_checkout_assert( false !== strpos( $main, 'Author:            xorro' ), 'author is xorro' );
 chain_checkout_assert( false !== strpos( $main, 'Author URI:        https://github.com/x-o-r-r-o' ), 'author URI is GitHub' );
 chain_checkout_assert( false === strpos( $main, 'Author URI:        https://wordpress.org/plugins/chain-checkout' ), 'author URI not same as plugin URI' );
@@ -166,8 +182,17 @@ chain_checkout_assert( is_dir( $root . '/assets/svg/coins' ), 'coin svg director
 chain_checkout_assert( is_file( $root . '/assets/svg/coins/xmr.svg' ), 'XMR icon present' );
 chain_checkout_assert( is_file( $root . '/assets/svg/coins/link.svg' ), 'LINK icon present' );
 chain_checkout_assert( is_file( $root . '/assets/svg/coins/hbar.svg' ), 'HBAR icon present' );
+chain_checkout_assert( is_file( $root . '/assets/svg/coins/bch.svg' ), 'BCH icon present' );
+chain_checkout_assert( is_file( $root . '/assets/svg/coins/base.svg' ), 'Base icon present' );
+chain_checkout_assert( is_file( $root . '/assets/svg/coins/dai.svg' ), 'DAI icon present' );
+chain_checkout_assert( is_file( $root . '/assets/svg/coins/wbtc.svg' ), 'WBTC icon present' );
+chain_checkout_assert( is_file( $root . '/assets/svg/coins/aave.svg' ), 'AAVE icon present' );
+chain_checkout_assert( false !== strpos( $verifier, "case 'bch'" ), 'verifier BCH case' );
+chain_checkout_assert( false !== strpos( $verifier, "case 'base'" ), 'verifier Base case' );
+chain_checkout_assert( false !== strpos( $verifier, 'bitcoin-cash' ), 'Blockchair bitcoin-cash' );
 $coins_php = file_get_contents( $root . '/includes/class-chain-checkout-coins.php' );
 chain_checkout_assert( false !== strpos( $coins_php, 'polygon-ecosystem-token' ), 'MATIC uses POL CoinGecko id' );
+chain_checkout_assert( false !== strpos( $coins_php, '8453' ), 'EIP-155 Base chain id 8453' );
 chain_checkout_assert( false === strpos( file_get_contents( $root . '/includes/class-chain-checkout-verifier.php' ), 'YourApiKeyToken' ), 'no placeholder Etherscan key' );
 
 $blocks_js = file_get_contents( $root . '/assets/js/blocks.js' );
@@ -179,11 +204,11 @@ chain_checkout_assert( false !== strpos( $readme_md, 'Checkout branding' ), 'REA
 
 $readme = file_get_contents( $root . '/readme.txt' );
 chain_checkout_assert( false !== strpos( $readme, 'Tested up to: 7.0' ), 'readme Tested up to WP 7.0' );
-chain_checkout_assert( false !== strpos( $readme, 'Stable tag: 1.4.3' ), 'readme stable 1.4.3' );
+chain_checkout_assert( false !== strpos( $readme, 'Stable tag: 1.4.4' ), 'readme stable 1.4.4' );
 
 $readme = file_get_contents( $root . '/readme.txt' );
 chain_checkout_assert( false !== strpos( $readme, '== External services ==' ), 'readme external services section' );
-chain_checkout_assert( false !== strpos( $readme, '1.4.3' ), 'readme 1.4.3 changelog' );
+chain_checkout_assert( false !== strpos( $readme, '1.4.4' ), 'readme 1.4.4 changelog' );
 $privacy = file_get_contents( $root . '/includes/class-chain-checkout-privacy.php' );
 chain_checkout_assert( false !== strpos( $privacy, 'wp_add_privacy_policy_content' ), 'privacy policy content registered' );
 chain_checkout_assert( is_file( $root . '/assets/js/qrcode.LICENSE.txt' ), 'qrcode license attribution' );

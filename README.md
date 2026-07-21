@@ -73,6 +73,11 @@ php tests/smoke-test.php
 
 See [readme.txt](readme.txt).
 
+### 1.4.4
+
+- Expanded auto-verify catalog (BCH, ETH L2s, more USDT/USDC/DAI networks, major ERC-20s)
+- Fixed BCH CashAddr Blockchair matching; Base chain support; new token icons
+
 ### 1.4.3
 
 - Hardened on-chain payment attribution (absolute match band, required recipients, confirmations)

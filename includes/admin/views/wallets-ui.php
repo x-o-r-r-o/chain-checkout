@@ -19,6 +19,7 @@ $sections = array(
 	'coins'  => __( 'Coins', 'chain-checkout' ),
 	'usdt'   => __( 'USDT', 'chain-checkout' ),
 	'usdc'   => __( 'USDC', 'chain-checkout' ),
+	'dai'    => __( 'DAI', 'chain-checkout' ),
 	'tokens' => __( 'Tokens', 'chain-checkout' ),
 );
 

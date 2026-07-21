@@ -4,7 +4,7 @@ Tags: woocommerce, cryptocurrency, bitcoin, ethereum, payments, usdt, crypto che
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.4.3
+Stable tag: 1.4.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,9 +19,9 @@ This plugin contacts public price and blockchain APIs to quote amounts and (opti
 = Features =
 
 * Direct-to-wallet payments (no payment processor holds your funds)
-* BTC, ETH, LTC, DOGE, SOL, TRX, XMR, XRP, BNB, MATIC/POL, ARB, OP, and more
-* USDT & USDC on multiple networks with separate wallet fields
-* Token support (LINK, UNI, CAKE, AVAX, and others) including multi-chain variants
+* BTC, BCH, ETH (incl. Arbitrum/Optimism/Base), LTC, DOGE, SOL, TRX, XMR, XRP, BNB, MATIC/POL, AVAX, ARB, OP, and more
+* USDT, USDC & DAI on multiple networks with separate wallet fields
+* Token support (WBTC, LINK, UNI, AAVE, MKR, LDO, CRV, COMP, APE, SHIB, PEPE, CAKE, and others) including multi-chain variants
 * Coin picker at checkout + payment page with amount, address, and QR code
 * 60-minute payment window (configurable)
 * Automatic on-chain verification via public explorers/RPCs (can be disabled)
@@ -61,7 +61,7 @@ Go to **Chain Checkout → General**. You can edit the title (e.g. “Pay with C
 
 = Which free API keys should I add? =
 
-* **Etherscan API V2** — one key for ETH, BNB, Polygon, Arbitrum, Optimism, Avalanche, and other EVM chains
+* **Etherscan API V2** — one key for ETH, BNB, Polygon, Arbitrum, Optimism, Base, Avalanche, and other EVM chains
 * **CoinGecko** — optional, for higher rate limits on price conversion
 * **TronGrid** — optional, for TRX / USDT-TRC20 reliability
 * **Helius** — optional, for more stable Solana verification
@@ -117,11 +117,11 @@ Chain Checkout does **not** phone home to the plugin author. It may contact the 
 * mempool.space terms/privacy: https://mempool.space/about
 * Blockstream: https://blockstream.com/
 
-= Blockchair (Litecoin / Dogecoin) =
+= Blockchair (Bitcoin Cash / Litecoin / Dogecoin) =
 
-* Purpose: Detect LTC/DOGE payments.
+* Purpose: Detect BCH/LTC/DOGE payments.
 * Data: Addresses / transactions for matching.
-* When: Automatic verification for LTC/DOGE.
+* When: Automatic verification for BCH/LTC/DOGE.
 * Site: https://blockchair.com/
 * Privacy: https://blockchair.com/privacy
 
@@ -164,6 +164,11 @@ Suggested privacy policy text is also added under **Settings → Privacy** when 
 * QR Code generator (`assets/js/qrcode.min.js`) — MIT-licensed library by davidshimjs (https://github.com/davidshimjs/qrcodejs). Source is publicly available; the bundled file is minified for production use.
 
 == Changelog ==
+
+= 1.4.4 =
+* Expanded auto-verify catalog: BCH, ETH on Arbitrum/Optimism/Base, USDT/USDC/DAI on Polygon/Avalanche/Base (+ USDC TRON), and major ERC-20s (WBTC, AAVE, MKR, LDO, CRV, COMP, APE, SHIB, PEPE, …)
+* Fixed Bitcoin Cash CashAddr matching on Blockchair; accept `ethereum` verifier in wallet validation (USDT/USDC/DAI/ERC-20 addresses were rejected); Base (8453) EVM verify
+* Added DAI admin section and SVG icons for new tokens/networks
 
 = 1.4.3 =
 * Hardened payment matching so % tolerance cannot overwhelm unique dust on shared wallets
@@ -242,6 +247,9 @@ Suggested privacy policy text is also added under **Settings → Privacy** when 
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.4.4 =
+Adds major auto-verifiable coins/tokens (BCH, Base, more stables/ERC-20s) and CashAddr matching fixes. Enable new assets under Coins, then add wallets.
 
 = 1.4.3 =
 Important payment-safety update: tighter matching, confirmations, expiry grace, and AJAX hardening. Update before accepting live payments.

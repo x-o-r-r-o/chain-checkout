@@ -347,6 +347,8 @@ class Chain_Checkout_Verifier {
 					return $found;
 				}
 				return self::check_blockstream( 'https://blockstream.info/api', $address, $min, $max, $since, 8 );
+			case 'bch':
+				return self::check_blockchair( 'bitcoin-cash', $address, $min, $max, $since );
 			case 'ltc':
 				return self::check_blockchair( 'litecoin', $address, $min, $max, $since );
 			case 'doge':
@@ -358,6 +360,8 @@ class Chain_Checkout_Verifier {
 				return self::check_evm( 42161, $address, $min, $max, $since, $coin );
 			case 'optimism':
 				return self::check_evm( 10, $address, $min, $max, $since, $coin );
+			case 'base':
+				return self::check_evm( 8453, $address, $min, $max, $since, $coin );
 			case 'bsc':
 				return self::check_evm( 56, $address, $min, $max, $since, $coin );
 			case 'matic':
@@ -464,13 +468,38 @@ class Chain_Checkout_Verifier {
 	 * @return bool
 	 */
 	private static function check_blockchair( $chain, $address, $min, $max, $since ) {
-		$url      = sprintf( 'https://api.blockchair.com/%s/dashboards/address/%s?limit=25', rawurlencode( $chain ), rawurlencode( $address ) );
+		$lookup = $address;
+		// Bitcoin Cash CashAddr may include a prefix Blockchair rejects in the path.
+		if ( 'bitcoin-cash' === $chain && 0 === stripos( $address, 'bitcoincash:' ) ) {
+			$lookup = substr( $address, strlen( 'bitcoincash:' ) );
+		}
+
+		$url      = sprintf( 'https://api.blockchair.com/%s/dashboards/address/%s?limit=25', rawurlencode( $chain ), rawurlencode( $lookup ) );
 		$response = self::http_get( $url );
-		if ( ! is_array( $response ) || empty( $response['data'][ $address ]['transactions'] ) ) {
+		if ( ! is_array( $response ) || empty( $response['data'] ) || ! is_array( $response['data'] ) ) {
 			return false;
 		}
 
-		$txs = $response['data'][ $address ]['transactions'];
+		$row = null;
+		if ( isset( $response['data'][ $lookup ] ) ) {
+			$row = $response['data'][ $lookup ];
+		} elseif ( isset( $response['data'][ $address ] ) ) {
+			$row = $response['data'][ $address ];
+		} else {
+			// Some responses key by a normalized form — take the first address payload.
+			foreach ( $response['data'] as $payload ) {
+				if ( is_array( $payload ) && isset( $payload['transactions'] ) ) {
+					$row = $payload;
+					break;
+				}
+			}
+		}
+		if ( ! $row || empty( $row['transactions'] ) || ! is_array( $row['transactions'] ) ) {
+			return false;
+		}
+
+		$need = self::min_confirmations();
+		$txs  = $row['transactions'];
 		foreach ( array_slice( $txs, 0, 15 ) as $txid ) {
 			$tx_url = sprintf( 'https://api.blockchair.com/%s/dashboards/transaction/%s', rawurlencode( $chain ), rawurlencode( $txid ) );
 			$tx     = self::http_get( $tx_url );
@@ -482,14 +511,34 @@ class Chain_Checkout_Verifier {
 			if ( ! $time || $time < $since ) {
 				continue;
 			}
-			// Require confirmed block id when present.
-			if ( isset( $data['transaction']['block_id'] ) && (int) $data['transaction']['block_id'] <= 0 ) {
+			$block_id = isset( $data['transaction']['block_id'] ) ? (int) $data['transaction']['block_id'] : 0;
+			if ( $block_id <= 0 ) {
 				continue;
+			}
+			if ( $need > 1 && isset( $data['transaction']['block_id'] ) && isset( $response['context']['state'] ) ) {
+				$tip = (int) $response['context']['state'];
+				if ( $tip > 0 && ( $tip - $block_id + 1 ) < $need ) {
+					continue;
+				}
 			}
 			$sum = 0.0;
 			if ( ! empty( $data['outputs'] ) && is_array( $data['outputs'] ) ) {
 				foreach ( $data['outputs'] as $out ) {
-					if ( ! empty( $out['recipient'] ) && 0 === strcasecmp( $out['recipient'], $address ) ) {
+					if ( empty( $out['recipient'] ) ) {
+						continue;
+					}
+					$recipient = (string) $out['recipient'];
+					$recv_bare = $recipient;
+					if ( 0 === stripos( $recv_bare, 'bitcoincash:' ) ) {
+						$recv_bare = substr( $recv_bare, strlen( 'bitcoincash:' ) );
+					}
+					if (
+						0 === strcasecmp( $recipient, $address )
+						|| 0 === strcasecmp( $recipient, $lookup )
+						|| 0 === strcasecmp( $recv_bare, $lookup )
+						|| 0 === strcasecmp( 'bitcoincash:' . $recv_bare, $address )
+						|| 0 === strcasecmp( 'bitcoincash:' . $lookup, $recipient )
+					) {
 						$sum += ( (float) $out['value'] ) / 1e8;
 					}
 				}

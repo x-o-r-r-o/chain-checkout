@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Chain Checkout
  * Plugin URI:        https://wordpress.org/plugins/chain-checkout
- * Description:       Accept cryptocurrency payments directly to your own wallets — no third-party payment processor. Supports BTC, ETH, USDT, USDC and 40+ coins/tokens with automatic on-chain verification.
- * Version:           1.4.3
+ * Description:       Accept cryptocurrency payments directly to your own wallets — no third-party payment processor. Supports BTC, BCH, ETH, USDT, USDC, DAI and 70+ coins/tokens with automatic on-chain verification.
+ * Version:           1.4.4
  * Requires at least: 6.9
  * Requires PHP:      7.4
  * Requires Plugins:  woocommerce
@@ -21,7 +21,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CHAIN_CHECKOUT_VERSION', '1.4.3' );
+define( 'CHAIN_CHECKOUT_VERSION', '1.4.4' );
 define( 'CHAIN_CHECKOUT_FILE', __FILE__ );
 define( 'CHAIN_CHECKOUT_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CHAIN_CHECKOUT_URL', plugin_dir_url( __FILE__ ) );

@@ -76,13 +76,22 @@ class Chain_Checkout_Wallets {
 		switch ( $verifier ) {
 			case 'btc':
 				return (bool) preg_match( '/^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,62}$/', $address );
+			case 'bch':
+				$addr = $address;
+				if ( 0 === stripos( $addr, 'bitcoincash:' ) ) {
+					$addr = substr( $addr, strlen( 'bitcoincash:' ) );
+				}
+				return (bool) preg_match( '/^(q|p)[a-z0-9]{41}$/', $addr )
+					|| (bool) preg_match( '/^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/', $addr );
 			case 'ltc':
 				return (bool) preg_match( '/^(ltc1|[LM3])[a-zA-HJ-NP-Z0-9]{25,62}$/', $address );
 			case 'doge':
 				return (bool) preg_match( '/^D[5-9A-HJ-NP-U][1-9A-HJ-NP-Za-km-z]{32}$/', $address );
 			case 'eth':
+			case 'ethereum':
 			case 'arbitrum':
 			case 'optimism':
+			case 'base':
 			case 'bsc':
 			case 'bnb':
 			case 'matic':

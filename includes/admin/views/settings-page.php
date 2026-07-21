@@ -240,6 +240,7 @@ $active  = isset( $tabs[ $tab ] ) ? $tabs[ $tab ] : $tabs['general'];
 									'coins'  => __( 'Coins', 'chain-checkout' ),
 									'usdt'   => __( 'USDT (multi-network)', 'chain-checkout' ),
 									'usdc'   => __( 'USDC (multi-network)', 'chain-checkout' ),
+									'dai'    => __( 'DAI (multi-network)', 'chain-checkout' ),
 									'tokens' => __( 'Tokens', 'chain-checkout' ),
 								);
 								foreach ( $sections as $section_key => $section_label ) :
@@ -472,7 +473,7 @@ $active  = isset( $tabs[ $tab ] ) ? $tabs[ $tab ] : $tabs['general'];
 									</tr>
 								</table>
 								<p class="description cc-footnote">
-									<?php esc_html_e( 'Bitcoin uses mempool.space with Blockstream fallback (no key needed). LTC/DOGE use Blockchair. XRP/XLM and most alt chains use public APIs. Monero (XMR) stays manual because inbound detection requires a private view key.', 'chain-checkout' ); ?>
+									<?php esc_html_e( 'Bitcoin uses mempool.space with Blockstream fallback (no key needed). BCH/LTC/DOGE use Blockchair. Base/Arbitrum/Optimism and other EVMs use Etherscan V2. XRP/XLM and most alt chains use public APIs. Monero (XMR) stays manual because inbound detection requires a private view key.', 'chain-checkout' ); ?>
 								</p>
 							<?php endif; ?>
 						</div>
