@@ -8,7 +8,7 @@
  * Requires PHP:      7.4
  * Requires Plugins:  woocommerce
  * Author:            xorro
- * Author URI:        https://github.com/x-o-r-r-o
+ * Author URI:        https://github.com/x-o-r-r-o/xorro-direct-wallet-payments-woocommerce
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       xorro-direct-wallet-payments-woocommerce

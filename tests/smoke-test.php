@@ -147,7 +147,7 @@ chain_checkout_assert( false !== strpos( $ajax, 'chain_checkout_status_' ), 'aja
 $main = file_get_contents( $root . '/chain-checkout.php' );
 chain_checkout_assert( false !== strpos( $main, 'Version:           1.4.6' ), 'plugin version 1.4.6' );
 chain_checkout_assert( false !== strpos( $main, 'Author:            xorro' ), 'author is xorro' );
-chain_checkout_assert( false !== strpos( $main, 'Author URI:        https://github.com/x-o-r-r-o' ), 'author URI is GitHub' );
+chain_checkout_assert( false !== strpos( $main, 'Author URI:        https://github.com/x-o-r-r-o/xorro-direct-wallet-payments-woocommerce' ), 'author URI is GitHub repo' );
 chain_checkout_assert( false === strpos( $main, 'Author URI:        https://wordpress.org/plugins/chain-checkout' ), 'author URI not same as plugin URI' );
 chain_checkout_assert( false !== strpos( $main, 'Requires at least: 6.9' ), 'Requires WP 6.9+' );
 chain_checkout_assert( false !== strpos( $main, 'WC requires at least: 10.0' ), 'Requires WC 10.0+' );

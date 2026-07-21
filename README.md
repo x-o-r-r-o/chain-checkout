@@ -31,14 +31,24 @@ WordPress / WooCommerce payment gateway for accepting cryptocurrency **directly 
 
 HTTPS is strongly recommended.
 
+## Repository
+
+- GitHub: https://github.com/x-o-r-r-o/xorro-direct-wallet-payments-woocommerce
+- Releases: https://github.com/x-o-r-r-o/xorro-direct-wallet-payments-woocommerce/releases
+
 ## Installation
 
-1. Download the latest release ZIP (exclude `tests/` and `.git` from wordpress.org packages), or clone into `wp-content/plugins/xorro-direct-wallet-payments-woocommerce`.
+1. Download the latest release ZIP from [Releases](https://github.com/x-o-r-r-o/xorro-direct-wallet-payments-woocommerce/releases) (exclude `tests/` and `.git` from wordpress.org packages), or clone into `wp-content/plugins/xorro-direct-wallet-payments-woocommerce`:
+
+```bash
+git clone https://github.com/x-o-r-r-o/xorro-direct-wallet-payments-woocommerce.git
+```
+
 2. Activate **Xorro Direct Wallet Payments for WooCommerce** in WordPress.
 3. Go to **Xorro Wallet Payments → Coins** and enable the assets you accept.
 4. Go to **Xorro Wallet Payments → Wallets** and add receiving addresses (`+ Add address` for rotation).
 5. Configure rates & explorer keys under **Prices & APIs**.
-6. Enable the gateway under **WooCommerce → Settings → Payments → Chain Checkout**.
+6. Enable the gateway under **WooCommerce → Settings → Payments → Xorro Wallet Payments**.
 7. (Optional) Under **Xorro Wallet Payments → General**, set checkout title, icon, size, and whether to show icon, text, or both.
 
 ## External services
@@ -127,7 +137,7 @@ See [readme.txt](readme.txt).
 
 ### 1.3.1
 
-- Fixed wordpress.org header validation: Author URI set to GitHub profile (distinct from Plugin URI)
+- Fixed wordpress.org header validation: Author URI set to GitHub repo (distinct from Plugin URI)
 
 ## License
 
