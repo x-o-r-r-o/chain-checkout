@@ -83,6 +83,10 @@ php tests/smoke-test.php
 
 See [readme.txt](readme.txt).
 
+### 1.5.4
+
+- TRC20 auto-verify works with default confirmations; more unique-dust slots; admin warnings for rejected wallets / missing Etherscan key
+
 ### 1.5.3
 
 - Admin shell CSS inlined via `wp_add_inline_style` so settings never render unstyled if the stylesheet URL fails

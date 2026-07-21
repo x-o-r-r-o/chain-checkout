@@ -136,6 +136,9 @@ xdwp_assert( false !== strpos( $verifier, 'confirmations_ok' ), 'verifier confir
 xdwp_assert( false !== strpos( $verifier, 'block_depth_ok' ), 'verifier block_depth_ok helper' );
 xdwp_assert( false !== strpos( $verifier, 'http_get_int' ), 'verifier tip height helper' );
 xdwp_assert( false !== strpos( $verifier, 'finalized' ), 'solana finalized commitment' );
+xdwp_assert( false !== strpos( $verifier, 'only_confirmed=true' ), 'tron only_confirmed list' );
+xdwp_assert( false !== strpos( $verifier, 'tron_tx_block_number' ), 'tron block lookup helper' );
+xdwp_assert( false !== strpos( file_get_contents( $root . '/includes/class-xdwp-prices.php' ), '$slots      = 99' ), 'unique dust has 99 slots' );
 
 $order_php = file_get_contents( $root . '/includes/class-xdwp-order.php' );
 xdwp_assert( false !== strpos( $order_php, 'expiry_grace_minutes' ), 'order expiry grace' );
@@ -148,7 +151,7 @@ xdwp_assert( false !== strpos( $ajax, 'xdwp_status_' ), 'ajax order-bound nonce'
 
 // --- Headers ---
 $main = file_get_contents( $root . '/xorro-direct-wallet-payments-woocommerce.php' );
-xdwp_assert( false !== strpos( $main, 'Version:           1.5.3' ), 'plugin version 1.5.3' );
+xdwp_assert( false !== strpos( $main, 'Version:           1.5.4' ), 'plugin version 1.5.4' );
 xdwp_assert( false !== strpos( $main, 'Author:            xorro' ), 'author is xorro' );
 xdwp_assert( false !== strpos( $main, 'Author URI:        https://github.com/x-o-r-r-o/xorro-direct-wallet-payments-woocommerce' ), 'author URI is GitHub repo' );
 xdwp_assert( false === strpos( $main, 'Author URI:        https://wordpress.org/plugins/xdwp' ), 'author URI not same as plugin URI' );
@@ -207,11 +210,11 @@ xdwp_assert( false !== strpos( $readme_md, 'Checkout branding' ), 'README.md bra
 
 $readme = file_get_contents( $root . '/readme.txt' );
 xdwp_assert( false !== strpos( $readme, 'Tested up to: 7.0' ), 'readme Tested up to WP 7.0' );
-xdwp_assert( false !== strpos( $readme, 'Stable tag: 1.5.3' ), 'readme stable 1.5.3' );
+xdwp_assert( false !== strpos( $readme, 'Stable tag: 1.5.4' ), 'readme stable 1.5.4' );
 
 $readme = file_get_contents( $root . '/readme.txt' );
 xdwp_assert( false !== strpos( $readme, '== External services ==' ), 'readme external services section' );
-xdwp_assert( false !== strpos( $readme, '1.5.3' ), 'readme 1.5.3 changelog' );
+xdwp_assert( false !== strpos( $readme, '1.5.4' ), 'readme 1.5.4 changelog' );
 $privacy = file_get_contents( $root . '/includes/class-xdwp-privacy.php' );
 xdwp_assert( false !== strpos( $privacy, 'wp_add_privacy_policy_content' ), 'privacy policy content registered' );
 xdwp_assert( is_file( $root . '/assets/js/qrcode.LICENSE.txt' ), 'qrcode license attribution' );

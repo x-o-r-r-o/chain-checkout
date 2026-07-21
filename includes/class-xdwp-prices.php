@@ -182,7 +182,7 @@ class Xdwp_Prices {
 		$counter = self::next_amount_seq();
 		// Space dust by 1000 units so match bands (~±400 units) never overlap across concurrent orders.
 		$step       = 1000;
-		$slots      = 9; // 1000..9000 inclusive in steps of 1000.
+		$slots      = 99; // 1000..99000 — enough concurrent shared-wallet orders before reuse.
 		$dust_units = $step + ( ( $counter % $slots ) * $step );
 		$dust       = $dust_units / pow( 10, $decimals );
 

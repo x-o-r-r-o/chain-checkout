@@ -81,7 +81,7 @@ class Xdwp_Verifier {
 		$target   = (float) $amount;
 		$unit     = pow( 10, -$decimals );
 
-		// Absolute epsilon: a few base units (unique dust uses ~1000–9999 units).
+		// Absolute epsilon: a few base units (unique dust uses 1000-unit steps).
 		$abs_eps = max( $unit * 50, $unit );
 
 		$tolerance_pct = max( 0.0, (float) Xdwp_Settings::get( 'underpayment_percent', 1 ) );
@@ -91,7 +91,7 @@ class Xdwp_Verifier {
 		// Never let % tolerance exceed half a unique-dust step when unique amounts are on.
 		$max_band = $abs_eps;
 		if ( 'yes' === Xdwp_Settings::get( 'unique_amounts', 'yes' ) && $decimals > 4 ) {
-			// Dust range is 1000..9999 units; keep band well below that gap.
+			// Dust steps are 1000 units apart; keep band well below that gap.
 			$max_band = max( $abs_eps, $unit * 400 );
 		} else {
 			$max_band = max( $abs_eps, min( $pct_under, $target * 0.02 ) );
@@ -1035,7 +1035,7 @@ class Xdwp_Verifier {
 
 		if ( 'trc20' === $coin['type'] && ! empty( $coin['contract'] ) ) {
 			$url = sprintf(
-				'https://api.trongrid.io/v1/accounts/%s/transactions/trc20?only_to=true&limit=50&contract_address=%s',
+				'https://api.trongrid.io/v1/accounts/%s/transactions/trc20?only_to=true&only_confirmed=true&limit=50&contract_address=%s',
 				rawurlencode( $address ),
 				rawurlencode( $coin['contract'] )
 			);
@@ -1059,7 +1059,7 @@ class Xdwp_Verifier {
 			return false;
 		}
 
-		$url      = sprintf( 'https://api.trongrid.io/v1/accounts/%s/transactions?only_to=true&limit=50', rawurlencode( $address ) );
+		$url      = sprintf( 'https://api.trongrid.io/v1/accounts/%s/transactions?only_to=true&only_confirmed=true&limit=50', rawurlencode( $address ) );
 		$response = self::http_get( $url, $tron_headers );
 		if ( empty( $response['data'] ) || ! is_array( $response['data'] ) ) {
 			return false;
@@ -1086,6 +1086,9 @@ class Xdwp_Verifier {
 	/**
 	 * Whether a TronGrid tx row is confirmed enough for our min_confirmations setting.
 	 *
+	 * TRC20 list rows often omit block height; resolve via gettransactioninfobyid.
+	 * only_confirmed=true list responses are already irreversible on TronGrid.
+	 *
 	 * @param array $tx Tx row.
 	 * @return bool
 	 */
@@ -1110,7 +1113,20 @@ class Xdwp_Verifier {
 			$tx_block = (int) $tx['block_number'];
 		}
 		if ( $tx_block <= 0 ) {
-			return false;
+			$txid = '';
+			if ( ! empty( $tx['transaction_id'] ) ) {
+				$txid = (string) $tx['transaction_id'];
+			} elseif ( ! empty( $tx['txID'] ) ) {
+				$txid = (string) $tx['txID'];
+			}
+			if ( $txid ) {
+				$tx_block = self::tron_tx_block_number( $txid );
+			}
+		}
+		if ( $tx_block <= 0 ) {
+			// only_confirmed feeds omit height on many TRC20 rows; Tron solidifies ~19 blocks.
+			// Accept when merchant asks for at most that depth and the row is not marked unconfirmed.
+			return $need <= 20;
 		}
 		$tip = self::cached_tip(
 			'tron',
@@ -1123,6 +1139,30 @@ class Xdwp_Verifier {
 			}
 		);
 		return self::block_depth_ok( $tx_block, $tip );
+	}
+
+	/**
+	 * Resolve TRON tx block height via TronGrid full-node API.
+	 *
+	 * @param string $txid Transaction id.
+	 * @return int
+	 */
+	private static function tron_tx_block_number( $txid ) {
+		$txid = (string) $txid;
+		if ( '' === $txid ) {
+			return 0;
+		}
+		static $cache = array();
+		if ( isset( $cache[ $txid ] ) ) {
+			return $cache[ $txid ];
+		}
+		$res   = self::http_post_json(
+			'https://api.trongrid.io/wallet/gettransactioninfobyid',
+			array( 'value' => $txid )
+		);
+		$block = isset( $res['blockNumber'] ) ? (int) $res['blockNumber'] : 0;
+		$cache[ $txid ] = $block;
+		return $block;
 	}
 
 	/**

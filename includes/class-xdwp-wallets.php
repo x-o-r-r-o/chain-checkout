@@ -13,14 +13,31 @@ defined( 'ABSPATH' ) || exit;
 class Xdwp_Wallets {
 
 	/**
+	 * Count of addresses dropped as invalid during the last sanitize_wallets() call.
+	 *
+	 * @var int
+	 */
+	private static $last_rejected = 0;
+
+	/**
+	 * Addresses rejected on last sanitize (for admin notices).
+	 *
+	 * @return int
+	 */
+	public static function last_rejected_count() {
+		return self::$last_rejected;
+	}
+
+	/**
 	 * Sanitize wallets map: coin_id => array of addresses.
 	 *
 	 * @param array<string, mixed> $wallets Raw wallets.
 	 * @return array<string, array<int, string>>
 	 */
 	public static function sanitize_wallets( array $wallets ) {
-		$clean = array();
-		$valid = array_keys( Xdwp_Coins::all() );
+		$clean               = array();
+		$valid               = array_keys( Xdwp_Coins::all() );
+		self::$last_rejected = 0;
 
 		foreach ( $wallets as $coin_id => $addresses ) {
 			$coin_id = sanitize_text_field( $coin_id );
@@ -43,6 +60,7 @@ class Xdwp_Wallets {
 					continue;
 				}
 				if ( ! self::is_plausible_address( $coin_id, $address ) ) {
+					self::$last_rejected++;
 					continue;
 				}
 				$list[] = $address;

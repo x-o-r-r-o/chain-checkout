@@ -4,7 +4,7 @@ Tags: woocommerce, cryptocurrency, bitcoin, ethereum, payments, usdt, crypto che
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.5.3
+Stable tag: 1.5.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -255,6 +255,12 @@ Suggested privacy policy text is also added under **Settings → Privacy** when 
 
 == Changelog ==
 
+= 1.5.4 =
+* Fixed TRC20 auto-verify with default confirmations (TronGrid only_confirmed + block lookup)
+* Expanded unique-dust slots so more concurrent shared-wallet orders stay distinguishable
+* Surface rejected wallet addresses and missing Etherscan key warnings in admin
+* Hardened checkout.js against missing localized config
+
 = 1.5.3 =
 * Admin shell CSS is inlined via wp_add_inline_style so the settings UI cannot render unstyled if the stylesheet URL fails
 
@@ -371,6 +377,9 @@ Suggested privacy policy text is also added under **Settings → Privacy** when 
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.5.4 =
+Fixes TRON TRC20 auto-verify and expands unique payment amounts for concurrent checkouts. Update recommended if you accept USDT/USDC on TRON or reuse wallet addresses.
 
 = 1.5.3 =
 Admin settings UI stays styled even if the external admin.css request fails. Update if the Xorro admin shell looked unstyled.

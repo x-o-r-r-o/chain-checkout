@@ -9,9 +9,10 @@
 	}
 
 	function gatewaySelected() {
+		var cfg = typeof window.xdwp !== 'undefined' ? window.xdwp : null;
 		return (
-			$('input[name="payment_method"]:checked').val() ===
-			(xdwp && xdwp.gateway)
+			cfg &&
+			$('input[name="payment_method"]:checked').val() === cfg.gateway
 		);
 	}
 
@@ -28,7 +29,7 @@
 	 * @param {number} attempt
 	 */
 	function startQuoteRequest(coin, seq, attempt) {
-		if (!coin || typeof xdwp === 'undefined') {
+		if (!coin || typeof window.xdwp === 'undefined') {
 			return;
 		}
 
@@ -40,9 +41,9 @@
 			setQuoteText('…');
 		}
 
-		quoteXhr = $.post(xdwp.ajaxUrl, {
+		quoteXhr = $.post(window.xdwp.ajaxUrl, {
 			action: 'xdwp_quote',
-			nonce: xdwp.nonce,
+			nonce: window.xdwp.nonce,
 			coin: coin
 		})
 			.done(function (res) {
